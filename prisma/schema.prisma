@@ -1,0 +1,373 @@
+// prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  super_admin
+  admin
+  teacher
+  student
+  parent
+}
+
+enum SubscriptionStatus {
+  active
+  inactive
+  cancelled
+  expired
+  trial
+}
+
+enum PaymentStatus {
+  pending
+  completed
+  failed
+  cancelled
+  refunded
+}
+
+enum AttendanceStatus {
+  present
+  absent
+  late
+  excused
+}
+
+enum ExamType {
+  quiz
+  test
+  midterm
+  final
+  assignment
+}
+
+model User {
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  email         String   @unique
+  password      String
+  firstName     String
+  lastName      String
+  role          UserRole @default(teacher)
+  avatar        String?
+  phone         String?
+  address       String?
+  isActive      Boolean  @default(true)
+  emailVerified Boolean  @default(false)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relations
+  schoolId      String? @db.ObjectId
+  school        School? @relation(fields: [schoolId], references: [id])
+  
+  // Teacher relations
+  classesTeaching Class[] @relation("ClassTeacher")
+  subjectsTeaching Subject[] @relation("SubjectTeacher")
+  assignmentsCreated Assignment[] @relation("AssignmentCreator")
+  examsCreated Exam[] @relation("ExamCreator")
+  attendanceRecords AttendanceRecord[] @relation("AttendanceRecorder")
+  
+  // Student relations
+  studentProfile Student?
+  
+  // Parent relations
+  children Student[] @relation("StudentParent")
+  
+  // Payments
+  paymentsInitiated Payment[] @relation("PaymentInitiator")
+  
+  @@map("users")
+}
+
+model School {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  name        String
+  address     String
+  phone       String?
+  email       String?
+  logo        String?
+  website     String?
+  description String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  users        User[]
+  students     Student[]
+  classes      Class[]
+  subjects     Subject[]
+  subscriptions Subscription[]
+  payments     Payment[]
+
+  @@map("schools")
+}
+
+model Student {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  studentId    String   @unique
+  firstName    String
+  lastName     String
+  dateOfBirth  DateTime
+  gender       String
+  address      String?
+  phone        String?
+  email        String?
+  avatar       String?
+  admissionDate DateTime @default(now())
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // Relations
+  userId       String?  @unique @db.ObjectId
+  user         User?    @relation(fields: [userId], references: [id])
+  
+  schoolId     String   @db.ObjectId
+  school       School   @relation(fields: [schoolId], references: [id])
+  
+  classId      String   @db.ObjectId
+  class        Class    @relation(fields: [classId], references: [id])
+  
+  parentId     String?  @db.ObjectId
+  parent       User?    @relation("StudentParent", fields: [parentId], references: [id])
+  
+  // Academic relations
+  attendanceRecords AttendanceRecord[]
+  assignmentSubmissions AssignmentSubmission[]
+  examResults ExamResult[]
+  payments    Payment[] @relation("StudentPayments")
+
+  @@map("students")
+}
+
+model Class {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  name        String
+  grade       String
+  section     String?
+  capacity    Int      @default(30)
+  description String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  schoolId    String @db.ObjectId
+  school      School @relation(fields: [schoolId], references: [id])
+  
+  teacherId   String @db.ObjectId
+  teacher     User   @relation("ClassTeacher", fields: [teacherId], references: [id])
+  
+  students    Student[]
+  subjects    Subject[]
+  assignments Assignment[]
+  exams       Exam[]
+  attendanceRecords AttendanceRecord[]
+
+  @@map("classes")
+}
+
+model Subject {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  name        String
+  code        String   @unique
+  description String?
+  credits     Int      @default(1)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  schoolId    String @db.ObjectId
+  school      School @relation(fields: [schoolId], references: [id])
+  
+  teacherId   String @db.ObjectId
+  teacher     User   @relation("SubjectTeacher", fields: [teacherId], references: [id])
+  
+  classId     String @db.ObjectId
+  class       Class  @relation(fields: [classId], references: [id])
+  
+  assignments Assignment[]
+  exams       Exam[]
+  attendanceRecords AttendanceRecord[]
+
+  @@map("subjects")
+}
+
+model AttendanceRecord {
+  id        String           @id @default(auto()) @map("_id") @db.ObjectId
+  date      DateTime
+  status    AttendanceStatus
+  notes     String?
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+
+  // Relations
+  studentId  String @db.ObjectId
+  student    Student @relation(fields: [studentId], references: [id])
+  
+  classId    String @db.ObjectId
+  class      Class @relation(fields: [classId], references: [id])
+  
+  subjectId  String @db.ObjectId
+  subject    Subject @relation(fields: [subjectId], references: [id])
+  
+  recordedBy String @db.ObjectId
+  recorder   User   @relation("AttendanceRecorder", fields: [recordedBy], references: [id])
+
+  @@unique([studentId, classId, subjectId, date])
+  @@map("attendance_records")
+}
+
+model Assignment {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  title       String
+  description String
+  dueDate     DateTime
+  maxPoints   Float    @default(100)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  classId     String @db.ObjectId
+  class       Class  @relation(fields: [classId], references: [id])
+  
+  subjectId   String @db.ObjectId
+  subject     Subject @relation(fields: [subjectId], references: [id])
+  
+  createdBy   String @db.ObjectId
+  creator     User   @relation("AssignmentCreator", fields: [createdBy], references: [id])
+  
+  submissions AssignmentSubmission[]
+
+  @@map("assignments")
+}
+
+model AssignmentSubmission {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  content     String
+  attachments String[] @default([])
+  points      Float?
+  feedback    String?
+  submittedAt DateTime @default(now())
+  gradedAt    DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  assignmentId String     @db.ObjectId
+  assignment   Assignment @relation(fields: [assignmentId], references: [id])
+  
+  studentId    String     @db.ObjectId
+  student      Student    @relation(fields: [studentId], references: [id])
+
+  @@unique([assignmentId, studentId])
+  @@map("assignment_submissions")
+}
+
+model Exam {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  title       String
+  description String?
+  examType    ExamType
+  examDate    DateTime
+  duration    Int      // in minutes
+  maxPoints   Float    @default(100)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  classId     String @db.ObjectId
+  class       Class  @relation(fields: [classId], references: [id])
+  
+  subjectId   String @db.ObjectId
+  subject     Subject @relation(fields: [subjectId], references: [id])
+  
+  createdBy   String @db.ObjectId
+  creator     User   @relation("ExamCreator", fields: [createdBy], references: [id])
+  
+  results     ExamResult[]
+
+  @@map("exams")
+}
+
+model ExamResult {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  points    Float
+  feedback  String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  examId    String  @db.ObjectId
+  exam      Exam    @relation(fields: [examId], references: [id])
+  
+  studentId String  @db.ObjectId
+  student   Student @relation(fields: [studentId], references: [id])
+
+  @@unique([examId, studentId])
+  @@map("exam_results")
+}
+
+model Payment {
+  id              String        @id @default(auto()) @map("_id") @db.ObjectId
+  amount          Float
+  currency        String        @default("NGN")
+  status          PaymentStatus @default(pending)
+  paymentMethod   String        // flutterwave, paga, etc.
+  transactionId   String?       @unique
+  reference       String        @unique
+  description     String
+  metadata        Json?
+  paidAt          DateTime?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  // Relations
+  schoolId        String  @db.ObjectId
+  school          School  @relation(fields: [schoolId], references: [id])
+  
+  studentId       String? @db.ObjectId
+  student         Student? @relation("StudentPayments", fields: [studentId], references: [id])
+  
+  initiatedBy     String  @db.ObjectId
+  initiator       User    @relation("PaymentInitiator", fields: [initiatedBy], references: [id])
+  
+  subscriptionId  String? @db.ObjectId
+  subscription    Subscription? @relation(fields: [subscriptionId], references: [id])
+
+  @@map("payments")
+}
+
+model Subscription {
+  id          String             @id @default(auto()) @map("_id") @db.ObjectId
+  planName    String
+  planType    String             // monthly, yearly, etc.
+  amount      Float
+  currency    String             @default("NGN")
+  status      SubscriptionStatus @default(trial)
+  startDate   DateTime
+  endDate     DateTime
+  features    Json               // plan features as JSON
+  isActive    Boolean            @default(true)
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+
+  // Relations
+  schoolId    String @db.ObjectId
+  school      School @relation(fields: [schoolId], references: [id])
+  
+  payments    Payment[]
+
+  @@map("subscriptions")
+}
