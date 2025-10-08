@@ -4,57 +4,194 @@
 /node_modules
 /.pnp
 .pnp.js
+/package-lock.json
+/yarn.lock
+/pnpm-lock.yaml
 
 # Testing
 /coverage
+*.test.js
+*.spec.js
 
 # Next.js
 /.next/
 /out/
+.next/
+out/
 
 # Production
 /build
+/dist
 
-# Misc
-.DS_Store
+# Environment Variables - ALL VARIANTS
+.env
+.env*
+.env.local
+.env.development
+.env.development.local
+.env.test
+.env.test.local
+.env.production
+.env.production.local
+.env*.local
+
+# Prisma
+prisma/migrations/
+prisma/*.db
+prisma/*.db-journal
+.prisma/
+
+# Database files
+*.sqlite
+*.sqlite3
+*.db
+
+# API Keys and Secrets (extra protection)
+**/secrets/
+**/config/secrets.*
+*.key
 *.pem
+*.cert
+*.crt
+*.p12
+*.pfx
+
+# IDE and Editors
+.vscode/
+.vscode/*
+!.vscode/extensions.json
+.idea/
+*.swp
+*.swo
+*~
+.project
+.classpath
+.settings/
+*.sublime-workspace
+*.sublime-project
+
+# OS Files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+Desktop.ini
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+pnpm-debug.log*
+
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts
+.tsbuildinfo
 
 # Debug
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-
-# Local env files
-.env
-.env*.local
-.env.production
-
-# Vercel
-.vercel
-
-# TypeScript
-*.tsbuildinfo
-next-env.d.ts
-
-# Prisma
-prisma/migrations/
-.env
-
-# IDE
-.vscode/
-.idea/
-
-# Logs
-logs
-*.log
+.pnpm-debug.log*
 
 # Docker
 Dockerfile.prod
 docker-compose.prod.yml
+docker-compose.override.yml
+.dockerignore
 
-# OS
-Thumbs.db
-
-# Temporary
+# Temporary files
 tmp/
 temp/
+*.tmp
+*.temp
+.cache
+.parcel-cache
+
+# Backup files
+*.backup
+*.bak
+*.old
+*~
+
+# Uploads and user content (if applicable)
+/uploads/
+/public/uploads/
+/storage/
+
+# Build artifacts
+*.js.map
+*.css.map
+
+# Package manager
+.npm
+.eslintcache
+.stylelintcache
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
+
+# Serverless
+.serverless/
+
+# Miscellaneous
+*.seed
+*.pid
+*.pid.lock
+
+# Sentry
+.sentryclirc
+
+# Local development
+.local
+
+# Vercel
+.vercel
+.vercel.json
+
+# Turbo
+.turbo
+
+# Debug and profiling
+chrome-profiler-events*.json
+speed-measure-plugin*.json
+
+# Documentation builds
+/docs/.vitepress/dist
+/docs/.vitepress/cache
+
+# Generated files
+/generated/
+*.generated.*
+
+# Email templates (if they contain sensitive info)
+# /email-templates/*.html
+
+# Payment gateway test files
+**/test-payment-data.json
+
+# Session files
+sessions/
+
+# Security
+*.cer
+*.der
+*.csr
+.ssh/
+
+# Never commit these specific sensitive files
+credentials.json
+service-account.json
+firebase-adminsdk*.json
+google-credentials.json
+aws-credentials.json

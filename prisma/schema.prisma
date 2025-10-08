@@ -62,10 +62,12 @@ model User {
   emailVerified Boolean  @default(false)
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
+  messagesSent     Message[] @relation("MessagesSent")
+  messagesReceived Message[] @relation("MessagesReceived")
 
   // Relations
   schoolId      String? @db.ObjectId
-  school        School? @relation(fields: [schoolId], references: [id])
+  school        School? @relation("SchoolUsers", fields: [schoolId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   
   // Teacher relations
   classesTeaching Class[] @relation("ClassTeacher")
@@ -75,7 +77,7 @@ model User {
   attendanceRecords AttendanceRecord[] @relation("AttendanceRecorder")
   
   // Student relations
-  studentProfile Student?
+  studentProfile Student? @relation("StudentUser")
   
   // Parent relations
   children Student[] @relation("StudentParent")
@@ -100,14 +102,39 @@ model School {
   updatedAt   DateTime @updatedAt
 
   // Relations
-  users        User[]
+  users        User[] @relation("SchoolUsers")
   students     Student[]
   classes      Class[]
   subjects     Subject[]
   subscriptions Subscription[]
   payments     Payment[]
+  teacherInvites TeacherInvite[]
 
   @@map("schools")
+}
+
+model TeacherInvite {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  code        String   @unique
+  email       String
+  firstName   String
+  lastName    String
+  subject     String?
+  status      String   @default("pending")
+  expiresAt   DateTime
+  usedAt      DateTime?
+  usedByUserId String? @db.ObjectId
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  schoolId    String   @db.ObjectId
+  school      School   @relation(fields: [schoolId], references: [id])
+
+  @@index([email])
+  @@index([schoolId])
+  
+  @@map("teacher_invites")
 }
 
 model Student {
@@ -128,7 +155,7 @@ model Student {
 
   // Relations
   userId       String?  @unique @db.ObjectId
-  user         User?    @relation(fields: [userId], references: [id])
+  user         User?    @relation("StudentUser", fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   
   schoolId     String   @db.ObjectId
   school       School   @relation(fields: [schoolId], references: [id])
@@ -137,7 +164,7 @@ model Student {
   class        Class    @relation(fields: [classId], references: [id])
   
   parentId     String?  @db.ObjectId
-  parent       User?    @relation("StudentParent", fields: [parentId], references: [id])
+  parent       User?    @relation("StudentParent", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   
   // Academic relations
   attendanceRecords AttendanceRecord[]
@@ -280,7 +307,7 @@ model Exam {
   description String?
   examType    ExamType
   examDate    DateTime
-  duration    Int      // in minutes
+  duration    Int
   maxPoints   Float    @default(100)
   isActive    Boolean  @default(true)
   createdAt   DateTime @default(now())
@@ -324,7 +351,7 @@ model Payment {
   amount          Float
   currency        String        @default("NGN")
   status          PaymentStatus @default(pending)
-  paymentMethod   String        // flutterwave, paga, etc.
+  paymentMethod   String
   transactionId   String?       @unique
   reference       String        @unique
   description     String
@@ -338,7 +365,7 @@ model Payment {
   school          School  @relation(fields: [schoolId], references: [id])
   
   studentId       String? @db.ObjectId
-  student         Student? @relation("StudentPayments", fields: [studentId], references: [id])
+  student         Student? @relation("StudentPayments", fields: [studentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   
   initiatedBy     String  @db.ObjectId
   initiator       User    @relation("PaymentInitiator", fields: [initiatedBy], references: [id])
@@ -352,13 +379,13 @@ model Payment {
 model Subscription {
   id          String             @id @default(auto()) @map("_id") @db.ObjectId
   planName    String
-  planType    String             // monthly, yearly, etc.
+  planType    String
   amount      Float
   currency    String             @default("NGN")
   status      SubscriptionStatus @default(trial)
   startDate   DateTime
   endDate     DateTime
-  features    Json               // plan features as JSON
+  features    Json
   isActive    Boolean            @default(true)
   createdAt   DateTime           @default(now())
   updatedAt   DateTime           @updatedAt
@@ -370,4 +397,25 @@ model Subscription {
   payments    Payment[]
 
   @@map("subscriptions")
+}
+
+model Message {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  title     String
+  content   String
+  priority  String   @default("normal") // normal, high, urgent
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  senderId  String   @db.ObjectId
+  sender    User     @relation("MessagesSent", fields: [senderId], references: [id])
+  
+  recipientId String @db.ObjectId
+  recipient   User   @relation("MessagesReceived", fields: [recipientId], references: [id])
+
+  @@index([recipientId])
+  @@index([senderId])
+  @@map("messages")
 }
