@@ -99,8 +99,8 @@ KlassMata is a full-stack SaaS solution that digitizes school operations, from s
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/bishopkbb/klassmata.git
-cd klassmata
+git clone https://github.com/bishopkbb/klassMata.git
+cd klassMata
 ```
 
 ### 2. Install Dependencies
@@ -121,7 +121,7 @@ NEXTAUTH_URL=http://localhost:3000
 NEXTAUTH_SECRET=generate-a-secure-random-string-here
 
 # Database
-DATABASE_URL=mongodb+srv://username:password@cluster.mongodb.net/klassmata?retryWrites=true&w=majority
+DATABASE_URL=mongodb+srv://username:password@cluster.mongodb.net/klassMata?retryWrites=true&w=majority
 
 # Email (Resend)
 RESEND_API_KEY=re_your_resend_api_key_here
@@ -248,8 +248,8 @@ Teachers can be invited by school admins:
 ## 📚 API Documentation
 
 ### Authentication
-- `POST /api/auth/register` - User registration
-- `POST /api/auth/login` - User login (via NextAuth)
+- `POST /api/auth/signup` - User registration
+- `POST /api/auth/signin` - User login (via NextAuth)
 - `GET /api/auth/session` - Get current session
 
 ### Teachers
@@ -383,7 +383,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - **Email**: ajibade_tosin@yahoo.com
 - **Documentation**: [docs.klassmata.com](https://docs.klassmata.com)
 - **Issues**: [GitHub Issues](https://github.com/bishopkbb/klassmata/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/bishopkbb/klassmata/discussions)
+- **Discussions**: [GitHub Discussions](https://github.com/bishopkbb/klassMata/discussions)
 
 ## 🗺️ Roadmap
 
