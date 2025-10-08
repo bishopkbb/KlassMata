@@ -2,12 +2,12 @@ import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 
 interface Params {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }
 
 // PUT update teacher
 export async function PUT(req: Request, { params }: Params) {
-  const { id } = params;
+  const { id } = await params;
   const data = await req.json();
   const { name, email, subject } = data;
   const [firstName, ...rest] = name.split(" ");
@@ -28,7 +28,7 @@ export async function PUT(req: Request, { params }: Params) {
 
 // DELETE teacher
 export async function DELETE(_: Request, { params }: Params) {
-  const { id } = params;
+  const { id } = await params;
 
   await prisma.user.delete({
     where: { id },

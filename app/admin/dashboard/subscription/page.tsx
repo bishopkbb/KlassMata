@@ -1,15 +1,15 @@
 // app/admin/dashboard/subscription/page.tsx
 
-'use client'
+"use client";
 
-import { useState, useEffect } from 'react'
-import { useSession } from 'next-auth/react'
-import { 
-  CreditCard, 
-  Calendar, 
-  Check, 
-  X, 
-  Crown, 
+import { useState, useEffect } from "react";
+import { useSession } from "next-auth/react";
+import {
+  CreditCard,
+  Calendar,
+  Check,
+  X,
+  Crown,
   Zap,
   Building2,
   Users,
@@ -21,133 +21,133 @@ import {
   AlertCircle,
   CheckCircle,
   ExternalLink,
-  RefreshCw
-} from 'lucide-react'
+  RefreshCw,
+} from "lucide-react";
 
 interface Subscription {
-  id: string
-  planName: string
-  planType: string
-  amount: number
-  currency: string
-  status: string
-  startDate: string
-  endDate: string
-  features: any
-  payments: Payment[]
+  id: string;
+  planName: string;
+  planType: string;
+  amount: number;
+  currency: string;
+  status: string;
+  startDate: string;
+  endDate: string;
+  features: any;
+  payments: Payment[];
 }
 
 interface Payment {
-  id: string
-  amount: number
-  currency: string
-  status: string
-  paymentMethod: string
-  reference: string
-  paidAt: string | null
-  createdAt: string
+  id: string;
+  amount: number;
+  currency: string;
+  status: string;
+  paymentMethod: string;
+  reference: string;
+  paidAt: string | null;
+  createdAt: string;
 }
 
 const SUBSCRIPTION_PLANS = {
   basic: {
-    name: 'Basic Plan',
+    name: "Basic Plan",
     price: 25000,
-    duration: '30 days',
-    color: 'bg-blue-500',
+    duration: "30 days",
+    color: "bg-blue-500",
     icon: Building2,
     features: [
-      'Up to 500 students',
-      'Basic reporting',
-      'Email support',
-      'Core school management',
-      'Student profiles',
-      'Class management'
+      "Up to 500 students",
+      "Basic reporting",
+      "Email support",
+      "Core school management",
+      "Student profiles",
+      "Class management",
     ],
-    limits: { students: 500, teachers: 25, classes: 50 }
+    limits: { students: 500, teachers: 25, classes: 50 },
   },
   pro: {
-    name: 'Pro Plan',
+    name: "Pro Plan",
     price: 45000,
-    duration: '30 days', 
-    color: 'bg-purple-500',
+    duration: "30 days",
+    color: "bg-purple-500",
     icon: Crown,
     features: [
-      'Up to 2000 students',
-      'Advanced analytics',
-      'Priority support',
-      'Custom branding',
-      'Attendance tracking',
-      'Grade management',
-      'Parent portal',
-      'Mobile app access'
+      "Up to 2000 students",
+      "Advanced analytics",
+      "Priority support",
+      "Custom branding",
+      "Attendance tracking",
+      "Grade management",
+      "Parent portal",
+      "Mobile app access",
     ],
-    limits: { students: 2000, teachers: 100, classes: 200 }
+    limits: { students: 2000, teachers: 100, classes: 200 },
   },
   enterprise: {
-    name: 'Enterprise Plan',
+    name: "Enterprise Plan",
     price: 75000,
-    duration: '30 days',
-    color: 'bg-gradient-to-r from-yellow-400 to-orange-500',
+    duration: "30 days",
+    color: "bg-gradient-to-r from-yellow-400 to-orange-500",
     icon: Zap,
     features: [
-      'Unlimited students',
-      'Advanced reports',
-      '24/7 support',
-      'API access',
-      'White labeling',
-      'Custom integrations',
-      'Dedicated account manager',
-      'Priority updates'
+      "Unlimited students",
+      "Advanced reports",
+      "24/7 support",
+      "API access",
+      "White labeling",
+      "Custom integrations",
+      "Dedicated account manager",
+      "Priority updates",
     ],
-    limits: { students: -1, teachers: -1, classes: -1 }
-  }
-}
+    limits: { students: -1, teachers: -1, classes: -1 },
+  },
+};
 
 export default function AdminSubscriptionPage() {
-  const { data: session } = useSession()
-  const [subscription, setSubscription] = useState<Subscription | null>(null)
-  const [payments, setPayments] = useState<Payment[]>([])
-  const [loading, setLoading] = useState(true)
-  const [processing, setProcessing] = useState('')
-  const [selectedPlan, setSelectedPlan] = useState<string>('')
+  const { data: session } = useSession();
+  const [subscription, setSubscription] = useState<Subscription | null>(null);
+  const [payments, setPayments] = useState<Payment[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [processing, setProcessing] = useState("");
+  const [selectedPlan, setSelectedPlan] = useState<string>("");
 
   // Fetch current subscription
   useEffect(() => {
     const fetchSubscription = async () => {
       try {
-        const response = await fetch('/api/schools/subscription')
+        const response = await fetch("/api/schools/subscription");
         if (response.ok) {
-          const data = await response.json()
-          setSubscription(data.subscription)
-          setPayments(data.payments || [])
+          const data = await response.json();
+          setSubscription(data.subscription);
+          setPayments(data.payments || []);
         }
       } catch (error) {
-        console.error('Error fetching subscription:', error)
+        console.error("Error fetching subscription:", error);
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
-    }
+    };
 
-    fetchSubscription()
-  }, [])
+    fetchSubscription();
+  }, []);
 
   const handlePlanSelection = async (planType: string, provider: string) => {
-    setProcessing(`${planType}-${provider}`)
-    
+    setProcessing(`${planType}-${provider}`);
+
     try {
       // Get school ID from session or API
-      const schoolResponse = await fetch('/api/schools/current')
-      const schoolData = await schoolResponse.json()
-      
+      const schoolResponse = await fetch("/api/schools/current");
+      const schoolData = await schoolResponse.json();
+
       if (!schoolData.school) {
-        alert('School information not found')
-        return
+        alert("School information not found");
+        return;
       }
 
-      const response = await fetch('/api/payments/initiate', {
-        method: 'POST',
+      const response = await fetch("/api/payments/initiate", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           planType,
@@ -156,78 +156,83 @@ export default function AdminSubscriptionPage() {
           billingInfo: {
             customerName: `${session?.user?.firstName} ${session?.user?.lastName}`,
             customerEmail: session?.user?.email,
-            customerPhone: '+2348000000000', // You might want to collect this
-          }
+            customerPhone: "+2348000000000", // You might want to collect this
+          },
         }),
-      })
+      });
 
       if (response.ok) {
-        const data = await response.json()
+        const data = await response.json();
         // Redirect to payment page
-        window.open(data.paymentUrl, '_blank')
+        window.open(data.paymentUrl, "_blank");
       } else {
-        const error = await response.json()
-        alert(error.error || 'Payment initiation failed')
+        const error = await response.json();
+        alert(error.error || "Payment initiation failed");
       }
     } catch (error) {
-      console.error('Payment initiation error:', error)
-      alert('An error occurred while initiating payment')
+      console.error("Payment initiation error:", error);
+      alert("An error occurred while initiating payment");
     } finally {
-      setProcessing('')
+      setProcessing("");
     }
-  }
+  };
 
   const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
-      case 'active':
-        return 'text-green-600 bg-green-100'
-      case 'expired':
-        return 'text-red-600 bg-red-100'
-      case 'cancelled':
-        return 'text-gray-600 bg-gray-100'
-      case 'trial':
-        return 'text-blue-600 bg-blue-100'
+      case "active":
+        return "text-green-600 bg-green-100";
+      case "expired":
+        return "text-red-600 bg-red-100";
+      case "cancelled":
+        return "text-gray-600 bg-gray-100";
+      case "trial":
+        return "text-blue-600 bg-blue-100";
       default:
-        return 'text-gray-600 bg-gray-100'
+        return "text-gray-600 bg-gray-100";
     }
-  }
+  };
 
   const getPaymentStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
-      case 'completed':
-        return 'text-green-600'
-      case 'pending':
-        return 'text-yellow-600'
-      case 'failed':
-        return 'text-red-600'
+      case "completed":
+        return "text-green-600";
+      case "pending":
+        return "text-yellow-600";
+      case "failed":
+        return "text-red-600";
       default:
-        return 'text-gray-600'
+        return "text-gray-600";
     }
-  }
+  };
 
   const formatAmount = (amount: number) => {
-    return new Intl.NumberFormat('en-NG', {
-      style: 'currency',
-      currency: 'NGN',
-    }).format(amount)
-  }
+    return new Intl.NumberFormat("en-NG", {
+      style: "currency",
+      currency: "NGN",
+    }).format(amount);
+  };
 
   const isExpiringSoon = (endDate: string) => {
-    const daysUntilExpiry = Math.ceil((new Date(endDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))
-    return daysUntilExpiry <= 7 && daysUntilExpiry > 0
-  }
+    const daysUntilExpiry = Math.ceil(
+      (new Date(endDate).getTime() - new Date().getTime()) /
+        (1000 * 60 * 60 * 24),
+    );
+    return daysUntilExpiry <= 7 && daysUntilExpiry > 0;
+  };
 
   const isExpired = (endDate: string) => {
-    return new Date(endDate) < new Date()
-  }
+    return new Date(endDate) < new Date();
+  };
 
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-96">
         <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
-        <span className="ml-2 text-gray-600">Loading subscription details...</span>
+        <span className="ml-2 text-gray-600">
+          Loading subscription details...
+        </span>
       </div>
-    )
+    );
   }
 
   return (
@@ -236,7 +241,7 @@ export default function AdminSubscriptionPage() {
       <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg shadow-sm p-6 text-white">
         <h1 className="text-3xl font-bold mb-2">Subscription Management</h1>
         <p className="text-blue-100">
-          Manage your school's subscription plan and billing
+          Manage your school&apos;s subscription plan and billing
         </p>
       </div>
 
@@ -254,16 +259,25 @@ export default function AdminSubscriptionPage() {
               {/* Plan Info */}
               <div className="space-y-4">
                 <div>
-                  <h3 className="text-xl font-bold text-gray-900">{subscription.planName}</h3>
-                  <p className="text-sm text-gray-500 uppercase">{subscription.planType} Plan</p>
+                  <h3 className="text-xl font-bold text-gray-900">
+                    {subscription.planName}
+                  </h3>
+                  <p className="text-sm text-gray-500 uppercase">
+                    {subscription.planType} Plan
+                  </p>
                 </div>
                 <div>
-                  <span className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(subscription.status)}`}>
+                  <span
+                    className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(subscription.status)}`}
+                  >
                     {subscription.status.toUpperCase()}
                   </span>
                 </div>
                 <div className="text-2xl font-bold text-gray-900">
-                  {formatAmount(subscription.amount)}<span className="text-sm text-gray-500 font-normal">/month</span>
+                  {formatAmount(subscription.amount)}
+                  <span className="text-sm text-gray-500 font-normal">
+                    /month
+                  </span>
                 </div>
               </div>
 
@@ -275,11 +289,14 @@ export default function AdminSubscriptionPage() {
                     Start Date
                   </div>
                   <div className="text-gray-900 font-medium">
-                    {new Date(subscription.startDate).toLocaleDateString('en-US', { 
-                      year: 'numeric', 
-                      month: 'long', 
-                      day: 'numeric' 
-                    })}
+                    {new Date(subscription.startDate).toLocaleDateString(
+                      "en-US",
+                      {
+                        year: "numeric",
+                        month: "long",
+                        day: "numeric",
+                      },
+                    )}
                   </div>
                 </div>
                 <div>
@@ -287,19 +304,32 @@ export default function AdminSubscriptionPage() {
                     <Clock className="w-4 h-4 mr-2" />
                     Expiry Date
                   </div>
-                  <div className={`font-medium ${
-                    isExpired(subscription.endDate) ? 'text-red-600' : 
-                    isExpiringSoon(subscription.endDate) ? 'text-yellow-600' : 
-                    'text-gray-900'
-                  }`}>
-                    {new Date(subscription.endDate).toLocaleDateString('en-US', { 
-                      year: 'numeric', 
-                      month: 'long', 
-                      day: 'numeric' 
-                    })}
+                  <div
+                    className={`font-medium ${
+                      isExpired(subscription.endDate)
+                        ? "text-red-600"
+                        : isExpiringSoon(subscription.endDate)
+                          ? "text-yellow-600"
+                          : "text-gray-900"
+                    }`}
+                  >
+                    {new Date(subscription.endDate).toLocaleDateString(
+                      "en-US",
+                      {
+                        year: "numeric",
+                        month: "long",
+                        day: "numeric",
+                      },
+                    )}
                     {isExpiringSoon(subscription.endDate) && (
                       <span className="ml-2 text-xs text-yellow-600">
-                        (Expires in {Math.ceil((new Date(subscription.endDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))} days)
+                        (Expires in{" "}
+                        {Math.ceil(
+                          (new Date(subscription.endDate).getTime() -
+                            new Date().getTime()) /
+                            (1000 * 60 * 60 * 24),
+                        )}{" "}
+                        days)
                       </span>
                     )}
                   </div>
@@ -324,9 +354,12 @@ export default function AdminSubscriptionPage() {
                 <div className="flex items-center">
                   <AlertCircle className="w-5 h-5 text-yellow-600 mr-3" />
                   <div>
-                    <h4 className="text-sm font-medium text-yellow-800">Subscription Expiring Soon</h4>
+                    <h4 className="text-sm font-medium text-yellow-800">
+                      Subscription Expiring Soon
+                    </h4>
                     <p className="text-sm text-yellow-700">
-                      Your subscription will expire soon. Renew now to avoid service interruption.
+                      Your subscription will expire soon. Renew now to avoid
+                      service interruption.
                     </p>
                   </div>
                 </div>
@@ -338,9 +371,12 @@ export default function AdminSubscriptionPage() {
                 <div className="flex items-center">
                   <X className="w-5 h-5 text-red-600 mr-3" />
                   <div>
-                    <h4 className="text-sm font-medium text-red-800">Subscription Expired</h4>
+                    <h4 className="text-sm font-medium text-red-800">
+                      Subscription Expired
+                    </h4>
                     <p className="text-sm text-red-700">
-                      Your subscription has expired. Please renew to continue using KlassMata services.
+                      Your subscription has expired. Please renew to continue
+                      using KlassMata services.
                     </p>
                   </div>
                 </div>
@@ -353,22 +389,26 @@ export default function AdminSubscriptionPage() {
       {/* Available Plans */}
       <div className="bg-white rounded-lg shadow-sm border border-gray-200">
         <div className="p-6 border-b border-gray-200">
-          <h2 className="text-lg font-semibold text-gray-900">Available Plans</h2>
-          <p className="text-sm text-gray-600 mt-1">Choose a plan that fits your school's needs</p>
+          <h2 className="text-lg font-semibold text-gray-900">
+            Available Plans
+          </h2>
+          <p className="text-sm text-gray-600 mt-1">
+            Choose a plan that fits your school&apos;s needs
+          </p>
         </div>
         <div className="p-6">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {Object.entries(SUBSCRIPTION_PLANS).map(([key, plan]) => {
-              const Icon = plan.icon
-              const isCurrentPlan = subscription?.planType === key
+              const Icon = plan.icon;
+              const isCurrentPlan = subscription?.planType === key;
 
               return (
-                <div 
+                <div
                   key={key}
                   className={`relative border-2 rounded-xl p-6 transition-all ${
-                    isCurrentPlan 
-                      ? 'border-blue-500 bg-blue-50' 
-                      : 'border-gray-200 hover:border-blue-300 hover:shadow-md'
+                    isCurrentPlan
+                      ? "border-blue-500 bg-blue-50"
+                      : "border-gray-200 hover:border-blue-300 hover:shadow-md"
                   }`}
                 >
                   {isCurrentPlan && (
@@ -381,10 +421,14 @@ export default function AdminSubscriptionPage() {
                   )}
 
                   <div className="text-center mb-6">
-                    <div className={`inline-flex items-center justify-center w-16 h-16 rounded-full ${plan.color} mb-4`}>
+                    <div
+                      className={`inline-flex items-center justify-center w-16 h-16 rounded-full ${plan.color} mb-4`}
+                    >
                       <Icon className="w-8 h-8 text-white" />
                     </div>
-                    <h3 className="text-xl font-bold text-gray-900 mb-2">{plan.name}</h3>
+                    <h3 className="text-xl font-bold text-gray-900 mb-2">
+                      {plan.name}
+                    </h3>
                     <div className="text-3xl font-bold text-gray-900">
                       {formatAmount(plan.price)}
                     </div>
@@ -403,7 +447,7 @@ export default function AdminSubscriptionPage() {
                   {!isCurrentPlan && (
                     <div className="space-y-2">
                       <button
-                        onClick={() => handlePlanSelection(key, 'flutterwave')}
+                        onClick={() => handlePlanSelection(key, "flutterwave")}
                         disabled={processing === `${key}-flutterwave`}
                         className="w-full px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
                       >
@@ -420,7 +464,7 @@ export default function AdminSubscriptionPage() {
                         )}
                       </button>
                       <button
-                        onClick={() => handlePlanSelection(key, 'paga')}
+                        onClick={() => handlePlanSelection(key, "paga")}
                         disabled={processing === `${key}-paga`}
                         className="w-full px-4 py-3 border border-blue-600 text-blue-600 rounded-lg hover:bg-blue-50 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
                       >
@@ -439,7 +483,7 @@ export default function AdminSubscriptionPage() {
                     </div>
                   )}
                 </div>
-              )
+              );
             })}
           </div>
         </div>
@@ -449,7 +493,9 @@ export default function AdminSubscriptionPage() {
       {payments.length > 0 && (
         <div className="bg-white rounded-lg shadow-sm border border-gray-200">
           <div className="p-6 border-b border-gray-200">
-            <h2 className="text-lg font-semibold text-gray-900">Payment History</h2>
+            <h2 className="text-lg font-semibold text-gray-900">
+              Payment History
+            </h2>
           </div>
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
@@ -476,7 +522,9 @@ export default function AdminSubscriptionPage() {
                 {payments.map((payment) => (
                   <tr key={payment.id} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {new Date(payment.paidAt || payment.createdAt).toLocaleDateString()}
+                      {new Date(
+                        payment.paidAt || payment.createdAt,
+                      ).toLocaleDateString()}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-mono text-gray-600">
                       {payment.reference}
@@ -488,7 +536,9 @@ export default function AdminSubscriptionPage() {
                       {payment.paymentMethod}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`text-sm font-medium capitalize ${getPaymentStatusColor(payment.status)}`}>
+                      <span
+                        className={`text-sm font-medium capitalize ${getPaymentStatusColor(payment.status)}`}
+                      >
                         {payment.status}
                       </span>
                     </td>
@@ -500,5 +550,5 @@ export default function AdminSubscriptionPage() {
         </div>
       )}
     </div>
-  )
+  );
 }

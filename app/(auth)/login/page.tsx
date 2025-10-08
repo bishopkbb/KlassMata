@@ -1,87 +1,87 @@
 // app/(auth)/login/page.tsx
 
-'use client'
+"use client";
 
-import { useState } from 'react'
-import { signIn, getSession } from 'next-auth/react'
-import { useRouter, useSearchParams } from 'next/navigation'
-import Link from 'next/link'
-import { BookOpen, Eye, EyeOff, Loader2 } from 'lucide-react'
-import { useForm } from 'react-hook-form'
-import { z } from 'zod'
+import { useState } from "react";
+import { signIn, getSession } from "next-auth/react";
+import { useRouter, useSearchParams } from "next/navigation";
+import Link from "next/link";
+import { BookOpen, Eye, EyeOff, Loader2 } from "lucide-react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
 
 const loginSchema = z.object({
-  email: z.string().email('Invalid email address'),
-  password: z.string().min(1, 'Password is required'),
-})
+  email: z.string().email("Invalid email address"),
+  password: z.string().min(1, "Password is required"),
+});
 
-type LoginFormData = z.infer<typeof loginSchema>
+type LoginFormData = z.infer<typeof loginSchema>;
 
 export default function LoginPage() {
-  const [isLoading, setIsLoading] = useState(false)
-  const [showPassword, setShowPassword] = useState(false)
-  const [error, setError] = useState('')
-  
-  const router = useRouter()
-  const searchParams = useSearchParams()
-  const callbackUrl = searchParams.get('callbackUrl') || '/dashboard'
+  const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState("");
+
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get("callbackUrl") || "/dashboard";
 
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<LoginFormData>()
+  } = useForm<LoginFormData>();
 
   const onSubmit = async (data: LoginFormData) => {
-    setIsLoading(true)
-    setError('')
+    setIsLoading(true);
+    setError("");
 
     try {
-      const result = await signIn('credentials', {
+      const result = await signIn("credentials", {
         email: data.email,
         password: data.password,
         redirect: false,
-      })
+      });
 
       if (result?.error) {
-        setError('Invalid email or password')
-        return
+        setError("Invalid email or password");
+        return;
       }
 
       if (result?.ok) {
         // Get the session to determine redirect based on role
-        const session = await getSession()
+        const session = await getSession();
         if (session?.user?.role) {
           switch (session.user.role) {
-            case 'super_admin':
-              router.push('/super/dashboard')
-              break
-            case 'admin':
-              router.push('/admin/dashboard')
-              break
-            case 'teacher':
-              router.push('/teacher/dashboard')
-              break
-            case 'student':
-              router.push('/student/dashboard')
-              break
-            case 'parent':
-              router.push('/parent/dashboard')
-              break
+            case "super_admin":
+              router.push("/super/dashboard");
+              break;
+            case "admin":
+              router.push("/admin/dashboard");
+              break;
+            case "teacher":
+              router.push("/teacher/dashboard");
+              break;
+            case "student":
+              router.push("/student/dashboard");
+              break;
+            case "parent":
+              router.push("/parent/dashboard");
+              break;
             default:
-              router.push('/teacher/dashboard')
+              router.push("/teacher/dashboard");
           }
         } else {
-          router.push(callbackUrl)
+          router.push(callbackUrl);
         }
       }
     } catch (error) {
-      setError('An unexpected error occurred')
-      console.error('Login error:', error)
+      setError("An unexpected error occurred");
+      console.error("Login error:", error);
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-green-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
@@ -112,30 +112,38 @@ export default function LoginPage() {
 
             {/* Email Field */}
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+              <label
+                htmlFor="email"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
                 Email Address
               </label>
               <input
-                {...register('email')}
+                {...register("email")}
                 type="email"
                 autoComplete="email"
                 className="w-full px-3 py-3 border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
                 placeholder="Enter your email address"
               />
               {errors.email && (
-                <p className="mt-2 text-sm text-red-600">{errors.email.message}</p>
+                <p className="mt-2 text-sm text-red-600">
+                  {errors.email.message}
+                </p>
               )}
             </div>
 
             {/* Password Field */}
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+              <label
+                htmlFor="password"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
                 Password
               </label>
               <div className="relative">
                 <input
-                  {...register('password')}
-                  type={showPassword ? 'text' : 'password'}
+                  {...register("password")}
+                  type={showPassword ? "text" : "password"}
                   autoComplete="current-password"
                   className="w-full px-3 py-3 pr-10 border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
                   placeholder="Enter your password"
@@ -153,7 +161,9 @@ export default function LoginPage() {
                 </button>
               </div>
               {errors.password && (
-                <p className="mt-2 text-sm text-red-600">{errors.password.message}</p>
+                <p className="mt-2 text-sm text-red-600">
+                  {errors.password.message}
+                </p>
               )}
             </div>
 
@@ -166,7 +176,10 @@ export default function LoginPage() {
                   type="checkbox"
                   className="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded"
                 />
-                <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-700">
+                <label
+                  htmlFor="remember-me"
+                  className="ml-2 block text-sm text-gray-700"
+                >
                   Remember me
                 </label>
               </div>
@@ -192,14 +205,14 @@ export default function LoginPage() {
                   Signing in...
                 </>
               ) : (
-                'Sign in'
+                "Sign in"
               )}
             </button>
 
             {/* Sign Up Link */}
             <div className="text-center">
               <p className="text-sm text-gray-600">
-                Don't have an account?{' '}
+                Don&apos;t have an account?{" "}
                 <Link
                   href="/auth/register"
                   className="font-medium text-green-600 hover:text-green-500 transition-colors"
@@ -213,13 +226,20 @@ export default function LoginPage() {
 
         {/* Demo Credentials */}
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-          <h3 className="text-sm font-medium text-blue-900 mb-2">Demo Credentials:</h3>
+          <h3 className="text-sm font-medium text-blue-900 mb-2">
+            Demo Credentials:
+          </h3>
           <div className="text-xs text-blue-700 space-y-1">
-            <p><strong>Super Admin:</strong> ajibade_tosin@yahoo.com (any password)</p>
-            <p><strong>Teacher:</strong> Any email with 6+ char password</p>
+            <p>
+              <strong>Super Admin:</strong> ajibade_tosin@yahoo.com (any
+              password)
+            </p>
+            <p>
+              <strong>Teacher:</strong> Any email with 6+ char password
+            </p>
           </div>
         </div>
       </div>
     </div>
-  )
+  );
 }

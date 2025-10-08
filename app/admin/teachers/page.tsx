@@ -1,91 +1,92 @@
 // app/admin/teachers/page.tsx
-'use client'
+"use client";
 
-import { useState, useEffect } from 'react'
-import { useSession } from 'next-auth/react'
-import { useRouter } from 'next/navigation'
-import InviteTeacherButton from '@/components/InviteTeacherButton'
-import PendingInvites from '@/components/PendingInvites'  // Add this import
-import Link from 'next/link'
-import { 
-  Users, 
-  Search, 
-  Edit, 
-  Trash2, 
+import { useState, useEffect } from "react";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import InviteTeacherButton from "@/components/InviteTeacherButton";
+import PendingInvites from "@/components/PendingInvites"; // Add this import
+import Link from "next/link";
+import {
+  Users,
+  Search,
+  Edit,
+  Trash2,
   Mail,
   Phone,
-  ArrowLeft
-} from 'lucide-react'
-import { toast, Toaster } from 'react-hot-toast'
+  ArrowLeft,
+} from "lucide-react";
+import { toast, Toaster } from "react-hot-toast";
 
 interface Teacher {
-  id: string
-  name: string
-  email: string
-  phone?: string
-  subject?: string
-  avatar?: string
-  joinedAt?: string
+  id: string;
+  name: string;
+  email: string;
+  phone?: string;
+  subject?: string;
+  avatar?: string;
+  joinedAt?: string;
 }
 
 export default function TeachersPage() {
-  const { data: session } = useSession()
-  const router = useRouter()
-  
-  const [teachers, setTeachers] = useState<Teacher[]>([])
-  const [loading, setLoading] = useState(true)
-  const [searchTerm, setSearchTerm] = useState('')
+  const { data: session } = useSession();
+  const router = useRouter();
+
+  const [teachers, setTeachers] = useState<Teacher[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
-    fetchTeachers()
-  }, [])
+    fetchTeachers();
+  }, []);
 
   const fetchTeachers = async () => {
     try {
-      setLoading(true)
-      const res = await fetch('/api/teachers')
-      
+      setLoading(true);
+      const res = await fetch("/api/teachers");
+
       if (res.status === 401) {
-        toast.error('Please log in to view teachers')
-        router.push('/auth/login')
-        return
+        toast.error("Please log in to view teachers");
+        router.push("/auth/login");
+        return;
       }
 
       if (res.ok) {
-        const data = await res.json()
-        setTeachers(data.teachers || [])
+        const data = await res.json();
+        setTeachers(data.teachers || []);
       } else {
-        toast.error('Failed to fetch teachers')
+        toast.error("Failed to fetch teachers");
       }
     } catch (error) {
-      console.error('Error fetching teachers:', error)
-      toast.error('Failed to fetch teachers')
+      console.error("Error fetching teachers:", error);
+      toast.error("Failed to fetch teachers");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this teacher?')) return
+    if (!confirm("Are you sure you want to delete this teacher?")) return;
 
     try {
-      const res = await fetch(`/api/teachers/${id}`, { method: 'DELETE' })
-      
+      const res = await fetch(`/api/teachers/${id}`, { method: "DELETE" });
+
       if (res.ok) {
-        setTeachers(prev => prev.filter(t => t.id !== id))
-        toast.success('Teacher deleted successfully!')
+        setTeachers((prev) => prev.filter((t) => t.id !== id));
+        toast.success("Teacher deleted successfully!");
       } else {
-        toast.error('Failed to delete teacher')
+        toast.error("Failed to delete teacher");
       }
     } catch (error) {
-      toast.error('An error occurred')
+      toast.error("An error occurred");
     }
-  }
+  };
 
-  const filteredTeachers = teachers.filter(teacher =>
-    teacher.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    teacher.email.toLowerCase().includes(searchTerm.toLowerCase())
-  )
+  const filteredTeachers = teachers.filter(
+    (teacher) =>
+      teacher.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      teacher.email.toLowerCase().includes(searchTerm.toLowerCase()),
+  );
 
   return (
     <div className="min-h-screen bg-gray-50 p-6">
@@ -100,7 +101,7 @@ export default function TeachersPage() {
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back to Dashboard
           </Link>
-          
+
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-3xl font-bold text-gray-900">Teachers</h1>
@@ -145,7 +146,7 @@ export default function TeachersPage() {
               <Users className="w-16 h-16 text-gray-300 mx-auto mb-4" />
               <p className="text-gray-600">No teachers found</p>
               <p className="text-sm text-gray-500 mt-2">
-                Click "Invite Teacher" to add your first teacher
+                Click {"Invite Teacher"} to add your first teacher
               </p>
             </div>
           ) : (
@@ -194,19 +195,20 @@ export default function TeachersPage() {
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center text-sm text-gray-600">
                           <Phone className="w-4 h-4 mr-2" />
-                          {teacher.phone || 'N/A'}
+                          {teacher.phone || "N/A"}
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                        {teacher.joinedAt 
+                        {teacher.joinedAt
                           ? new Date(teacher.joinedAt).toLocaleDateString()
-                          : 'N/A'
-                        }
+                          : "N/A"}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                         <div className="flex items-center justify-end space-x-2">
                           <button
-                            onClick={() => router.push(`/admin/teachers/${teacher.id}`)}
+                            onClick={() =>
+                              router.push(`/admin/teachers/${teacher.id}`)
+                            }
                             className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
                             title="View details"
                           >
@@ -230,5 +232,5 @@ export default function TeachersPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }

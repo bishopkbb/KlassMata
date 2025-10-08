@@ -15,7 +15,7 @@ export default function AdminSettingsPage() {
     email: "",
     website: "",
     motto: "",
-    logo: ""
+    logo: "",
   });
 
   // Subscription State
@@ -24,7 +24,7 @@ export default function AdminSettingsPage() {
     status: "active",
     billingCycle: "monthly",
     nextBillingDate: "",
-    amount: "20000"
+    amount: "20000",
   });
 
   // System Settings State
@@ -39,7 +39,7 @@ export default function AdminSettingsPage() {
     enableSMS: true,
     enableEmail: true,
     enableParentPortal: false,
-    enableStudentPortal: false
+    enableStudentPortal: false,
   });
 
   // User Permissions State
@@ -48,7 +48,7 @@ export default function AdminSettingsPage() {
     teachersCanDeleteAttendance: false,
     parentsCanViewReports: true,
     studentsCanViewGrades: false,
-    autoGenerateIDs: true
+    autoGenerateIDs: true,
   });
 
   // Security Settings State
@@ -57,7 +57,7 @@ export default function AdminSettingsPage() {
     passwordExpiry: "90",
     sessionTimeout: "30",
     allowMultipleSessions: false,
-    ipWhitelist: ""
+    ipWhitelist: "",
   });
 
   // Fetch settings on mount
@@ -95,12 +95,19 @@ export default function AdminSettingsPage() {
     }
   };
 
-  const handleSchoolProfileChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleSchoolProfileChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => {
     setSchoolProfile({ ...schoolProfile, [e.target.name]: e.target.value });
   };
 
-  const handleSystemSettingsChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const value = e.target.type === "checkbox" ? (e.target as HTMLInputElement).checked : e.target.value;
+  const handleSystemSettingsChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
+  ) => {
+    const value =
+      e.target.type === "checkbox"
+        ? (e.target as HTMLInputElement).checked
+        : e.target.value;
     setSystemSettings({ ...systemSettings, [e.target.name]: value });
   };
 
@@ -108,8 +115,13 @@ export default function AdminSettingsPage() {
     setPermissions({ ...permissions, [e.target.name]: e.target.checked });
   };
 
-  const handleSecurityChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const value = e.target.type === "checkbox" ? (e.target as HTMLInputElement).checked : e.target.value;
+  const handleSecurityChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
+  ) => {
+    const value =
+      e.target.type === "checkbox"
+        ? (e.target as HTMLInputElement).checked
+        : e.target.value;
     setSecurity({ ...security, [e.target.name]: value });
   };
 
@@ -120,7 +132,7 @@ export default function AdminSettingsPage() {
       const res = await fetch("/api/admin/settings/school", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(schoolProfile)
+        body: JSON.stringify(schoolProfile),
       });
 
       if (res.ok) {
@@ -142,7 +154,7 @@ export default function AdminSettingsPage() {
       const res = await fetch("/api/admin/settings/system", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(systemSettings)
+        body: JSON.stringify(systemSettings),
       });
 
       if (res.ok) {
@@ -164,7 +176,7 @@ export default function AdminSettingsPage() {
       const res = await fetch("/api/admin/settings/permissions", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(permissions)
+        body: JSON.stringify(permissions),
       });
 
       if (res.ok) {
@@ -186,7 +198,7 @@ export default function AdminSettingsPage() {
       const res = await fetch("/api/admin/settings/security", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(security)
+        body: JSON.stringify(security),
       });
 
       if (res.ok) {
@@ -212,14 +224,22 @@ export default function AdminSettingsPage() {
         {/* Header */}
         <div className="mb-6">
           <h1 className="text-3xl font-bold text-gray-800">Admin Settings</h1>
-          <p className="text-gray-600 mt-1">Manage your school's configuration and preferences</p>
+          <p className="text-gray-600 mt-1">
+            Manage your school&apos;s configuration and preferences
+          </p>
         </div>
 
         {/* Tabs */}
         <div className="bg-white rounded-lg shadow-sm mb-6">
           <div className="border-b border-gray-200">
             <nav className="flex space-x-8 px-6" aria-label="Tabs">
-              {["school", "subscription", "system", "permissions", "security"].map((tab) => (
+              {[
+                "school",
+                "subscription",
+                "system",
+                "permissions",
+                "security",
+              ].map((tab) => (
                 <button
                   key={tab}
                   onClick={() => setActiveTab(tab)}
@@ -346,15 +366,22 @@ export default function AdminSettingsPage() {
                         {subscription.plan} Plan
                       </h3>
                       <p className="text-emerald-100">
-                        Status: <span className="font-semibold">{subscription.status.toUpperCase()}</span>
+                        Status:{" "}
+                        <span className="font-semibold">
+                          {subscription.status.toUpperCase()}
+                        </span>
                       </p>
                       <p className="text-emerald-100 mt-1">
                         Next billing: {subscription.nextBillingDate || "N/A"}
                       </p>
                     </div>
                     <div className="text-right">
-                      <p className="text-3xl font-bold">₦{parseInt(subscription.amount).toLocaleString()}</p>
-                      <p className="text-emerald-100">per {subscription.billingCycle}</p>
+                      <p className="text-3xl font-bold">
+                        ₦{parseInt(subscription.amount).toLocaleString()}
+                      </p>
+                      <p className="text-emerald-100">
+                        per {subscription.billingCycle}
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -363,7 +390,10 @@ export default function AdminSettingsPage() {
                   {/* Basic Plan */}
                   <div className="border-2 border-gray-200 rounded-lg p-6 hover:border-emerald-900 transition-colors">
                     <h4 className="text-xl font-bold mb-2">Basic</h4>
-                    <p className="text-3xl font-bold text-emerald-900 mb-4">₦20,000<span className="text-sm text-gray-600">/month</span></p>
+                    <p className="text-3xl font-bold text-emerald-900 mb-4">
+                      ₦20,000
+                      <span className="text-sm text-gray-600">/month</span>
+                    </p>
                     <ul className="space-y-2 text-sm text-gray-600 mb-6">
                       <li>✓ Admin Dashboard</li>
                       <li>✓ Teacher Dashboard</li>
@@ -389,7 +419,10 @@ export default function AdminSettingsPage() {
                       POPULAR
                     </div>
                     <h4 className="text-xl font-bold mb-2">Pro</h4>
-                    <p className="text-3xl font-bold text-emerald-900 mb-4">₦50,000<span className="text-sm text-gray-600">/month</span></p>
+                    <p className="text-3xl font-bold text-emerald-900 mb-4">
+                      ₦50,000
+                      <span className="text-sm text-gray-600">/month</span>
+                    </p>
                     <ul className="space-y-2 text-sm text-gray-600 mb-6">
                       <li>✓ All Basic features</li>
                       <li>✓ Parent Portal</li>
@@ -403,7 +436,10 @@ export default function AdminSettingsPage() {
                         Current Plan
                       </button>
                     ) : (
-                      <button onClick={upgradePlan} className="w-full bg-emerald-900 text-white px-4 py-2 rounded-lg hover:bg-emerald-800">
+                      <button
+                        onClick={upgradePlan}
+                        className="w-full bg-emerald-900 text-white px-4 py-2 rounded-lg hover:bg-emerald-800"
+                      >
                         Upgrade Now
                       </button>
                     )}
@@ -412,7 +448,9 @@ export default function AdminSettingsPage() {
                   {/* Enterprise Plan */}
                   <div className="border-2 border-gray-200 rounded-lg p-6 hover:border-emerald-900 transition-colors">
                     <h4 className="text-xl font-bold mb-2">Enterprise</h4>
-                    <p className="text-3xl font-bold text-emerald-900 mb-4">Custom</p>
+                    <p className="text-3xl font-bold text-emerald-900 mb-4">
+                      Custom
+                    </p>
                     <ul className="space-y-2 text-sm text-gray-600 mb-6">
                       <li>✓ All Pro features</li>
                       <li>✓ Unlimited students</li>
@@ -517,13 +555,17 @@ export default function AdminSettingsPage() {
                     >
                       <option value="Africa/Lagos">Africa/Lagos (WAT)</option>
                       <option value="UTC">UTC</option>
-                      <option value="America/New_York">America/New York (EST)</option>
+                      <option value="America/New_York">
+                        America/New York (EST)
+                      </option>
                     </select>
                   </div>
                 </div>
 
                 <div className="border-t pt-6">
-                  <h3 className="text-lg font-semibold mb-4">Feature Toggles</h3>
+                  <h3 className="text-lg font-semibold mb-4">
+                    Feature Toggles
+                  </h3>
                   <div className="space-y-3">
                     <label className="flex items-center">
                       <input
@@ -533,7 +575,9 @@ export default function AdminSettingsPage() {
                         onChange={handleSystemSettingsChange}
                         className="w-4 h-4 text-emerald-900 border-gray-300 rounded focus:ring-emerald-900"
                       />
-                      <span className="ml-3 text-sm text-gray-700">Enable SMS Notifications</span>
+                      <span className="ml-3 text-sm text-gray-700">
+                        Enable SMS Notifications
+                      </span>
                     </label>
 
                     <label className="flex items-center">
@@ -544,7 +588,9 @@ export default function AdminSettingsPage() {
                         onChange={handleSystemSettingsChange}
                         className="w-4 h-4 text-emerald-900 border-gray-300 rounded focus:ring-emerald-900"
                       />
-                      <span className="ml-3 text-sm text-gray-700">Enable Email Notifications</span>
+                      <span className="ml-3 text-sm text-gray-700">
+                        Enable Email Notifications
+                      </span>
                     </label>
 
                     <label className="flex items-center">
@@ -557,7 +603,8 @@ export default function AdminSettingsPage() {
                         className="w-4 h-4 text-emerald-900 border-gray-300 rounded focus:ring-emerald-900 disabled:opacity-50"
                       />
                       <span className="ml-3 text-sm text-gray-700">
-                        Enable Parent Portal {subscription.plan === "Basic" && "(Pro plan required)"}
+                        Enable Parent Portal{" "}
+                        {subscription.plan === "Basic" && "(Pro plan required)"}
                       </span>
                     </label>
 
@@ -571,7 +618,8 @@ export default function AdminSettingsPage() {
                         className="w-4 h-4 text-emerald-900 border-gray-300 rounded focus:ring-emerald-900 disabled:opacity-50"
                       />
                       <span className="ml-3 text-sm text-gray-700">
-                        Enable Student Portal {subscription.plan === "Basic" && "(Pro plan required)"}
+                        Enable Student Portal{" "}
+                        {subscription.plan === "Basic" && "(Pro plan required)"}
                       </span>
                     </label>
                   </div>
@@ -594,10 +642,14 @@ export default function AdminSettingsPage() {
               <form onSubmit={savePermissions} className="space-y-6">
                 <div className="space-y-4">
                   <div className="border-b pb-4">
-                    <h3 className="text-lg font-semibold mb-3">Teacher Permissions</h3>
+                    <h3 className="text-lg font-semibold mb-3">
+                      Teacher Permissions
+                    </h3>
                     <div className="space-y-3">
                       <label className="flex items-center justify-between">
-                        <span className="text-sm text-gray-700">Allow teachers to edit grades after submission</span>
+                        <span className="text-sm text-gray-700">
+                          Allow teachers to edit grades after submission
+                        </span>
                         <input
                           type="checkbox"
                           name="teachersCanEditGrades"
@@ -608,7 +660,9 @@ export default function AdminSettingsPage() {
                       </label>
 
                       <label className="flex items-center justify-between">
-                        <span className="text-sm text-gray-700">Allow teachers to delete attendance records</span>
+                        <span className="text-sm text-gray-700">
+                          Allow teachers to delete attendance records
+                        </span>
                         <input
                           type="checkbox"
                           name="teachersCanDeleteAttendance"
@@ -621,10 +675,14 @@ export default function AdminSettingsPage() {
                   </div>
 
                   <div className="border-b pb-4">
-                    <h3 className="text-lg font-semibold mb-3">Parent Permissions</h3>
+                    <h3 className="text-lg font-semibold mb-3">
+                      Parent Permissions
+                    </h3>
                     <div className="space-y-3">
                       <label className="flex items-center justify-between">
-                        <span className="text-sm text-gray-700">Allow parents to view detailed reports</span>
+                        <span className="text-sm text-gray-700">
+                          Allow parents to view detailed reports
+                        </span>
                         <input
                           type="checkbox"
                           name="parentsCanViewReports"
@@ -637,10 +695,14 @@ export default function AdminSettingsPage() {
                   </div>
 
                   <div className="border-b pb-4">
-                    <h3 className="text-lg font-semibold mb-3">Student Permissions</h3>
+                    <h3 className="text-lg font-semibold mb-3">
+                      Student Permissions
+                    </h3>
                     <div className="space-y-3">
                       <label className="flex items-center justify-between">
-                        <span className="text-sm text-gray-700">Allow students to view grades immediately</span>
+                        <span className="text-sm text-gray-700">
+                          Allow students to view grades immediately
+                        </span>
                         <input
                           type="checkbox"
                           name="studentsCanViewGrades"
@@ -653,10 +715,14 @@ export default function AdminSettingsPage() {
                   </div>
 
                   <div>
-                    <h3 className="text-lg font-semibold mb-3">System Automation</h3>
+                    <h3 className="text-lg font-semibold mb-3">
+                      System Automation
+                    </h3>
                     <div className="space-y-3">
                       <label className="flex items-center justify-between">
-                        <span className="text-sm text-gray-700">Auto-generate student IDs on enrollment</span>
+                        <span className="text-sm text-gray-700">
+                          Auto-generate student IDs on enrollment
+                        </span>
                         <input
                           type="checkbox"
                           name="autoGenerateIDs"
@@ -686,7 +752,8 @@ export default function AdminSettingsPage() {
               <form onSubmit={saveSecurity} className="space-y-6">
                 <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
                   <p className="text-sm text-yellow-800">
-                    ⚠️ Security settings affect all users. Changes take effect immediately.
+                    ⚠️ Security settings affect all users. Changes take effect
+                    immediately.
                   </p>
                 </div>
 
@@ -702,7 +769,10 @@ export default function AdminSettingsPage() {
                       onChange={handleSecurityChange}
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-900 focus:border-transparent"
                     />
-                    <p className="text-xs text-gray-500 mt-1">Users will be required to change password after this period</p>
+                    <p className="text-xs text-gray-500 mt-1">
+                      Users will be required to change password after this
+                      period
+                    </p>
                   </div>
 
                   <div>
@@ -716,7 +786,9 @@ export default function AdminSettingsPage() {
                       onChange={handleSecurityChange}
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-900 focus:border-transparent"
                     />
-                    <p className="text-xs text-gray-500 mt-1">Automatic logout after inactivity</p>
+                    <p className="text-xs text-gray-500 mt-1">
+                      Automatic logout after inactivity
+                    </p>
                   </div>
                 </div>
 
@@ -729,7 +801,9 @@ export default function AdminSettingsPage() {
                       onChange={handleSecurityChange}
                       className="w-4 h-4 text-emerald-900 border-gray-300 rounded focus:ring-emerald-900"
                     />
-                    <span className="ml-3 text-sm text-gray-700">Enable Two-Factor Authentication (2FA)</span>
+                    <span className="ml-3 text-sm text-gray-700">
+                      Enable Two-Factor Authentication (2FA)
+                    </span>
                   </label>
 
                   <label className="flex items-center">
@@ -740,7 +814,9 @@ export default function AdminSettingsPage() {
                       onChange={handleSecurityChange}
                       className="w-4 h-4 text-emerald-900 border-gray-300 rounded focus:ring-emerald-900"
                     />
-                    <span className="ml-3 text-sm text-gray-700">Allow users to login from multiple devices</span>
+                    <span className="ml-3 text-sm text-gray-700">
+                      Allow users to login from multiple devices
+                    </span>
                   </label>
                 </div>
 
@@ -751,25 +827,34 @@ export default function AdminSettingsPage() {
                   <textarea
                     name="ipWhitelist"
                     value={security.ipWhitelist}
-                    onChange={(e) => setSecurity({ ...security, ipWhitelist: e.target.value })}
+                    onChange={(e) =>
+                      setSecurity({ ...security, ipWhitelist: e.target.value })
+                    }
                     rows={3}
                     placeholder="Enter IP addresses (one per line)"
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-900 focus:border-transparent"
                   />
-                  <p className="text-xs text-gray-500 mt-1">Only these IPs will be allowed to access the system. Leave empty to allow all.</p>
+                  <p className="text-xs text-gray-500 mt-1">
+                    Only these IPs will be allowed to access the system. Leave
+                    empty to allow all.
+                  </p>
                 </div>
 
                 <div className="flex justify-end space-x-3">
                   <button
                     type="button"
                     onClick={() => {
-                      if (confirm("Are you sure you want to reset all security settings to defaults?")) {
+                      if (
+                        confirm(
+                          "Are you sure you want to reset all security settings to defaults?",
+                        )
+                      ) {
                         setSecurity({
                           twoFactorAuth: false,
                           passwordExpiry: "90",
                           sessionTimeout: "30",
                           allowMultipleSessions: false,
-                          ipWhitelist: ""
+                          ipWhitelist: "",
                         });
                         toast.success("Security settings reset to defaults");
                       }
@@ -798,7 +883,9 @@ export default function AdminSettingsPage() {
             <div className="flex justify-between items-center pb-4 border-b">
               <div>
                 <h3 className="font-semibold text-gray-800">Export All Data</h3>
-                <p className="text-sm text-gray-600">Download a complete backup of your school data</p>
+                <p className="text-sm text-gray-600">
+                  Download a complete backup of your school data
+                </p>
               </div>
               <button
                 onClick={() => {
@@ -813,12 +900,20 @@ export default function AdminSettingsPage() {
 
             <div className="flex justify-between items-center pb-4 border-b">
               <div>
-                <h3 className="font-semibold text-gray-800">Reset Academic Year</h3>
-                <p className="text-sm text-gray-600">Clear all attendance and grades for new academic year</p>
+                <h3 className="font-semibold text-gray-800">
+                  Reset Academic Year
+                </h3>
+                <p className="text-sm text-gray-600">
+                  Clear all attendance and grades for new academic year
+                </p>
               </div>
               <button
                 onClick={() => {
-                  if (confirm("This will clear attendance and grades. Are you sure?")) {
+                  if (
+                    confirm(
+                      "This will clear attendance and grades. Are you sure?",
+                    )
+                  ) {
                     toast.success("Academic year reset initiated");
                     // Handle reset
                   }
@@ -831,15 +926,27 @@ export default function AdminSettingsPage() {
 
             <div className="flex justify-between items-center">
               <div>
-                <h3 className="font-semibold text-red-600">Delete School Account</h3>
-                <p className="text-sm text-gray-600">Permanently delete your school and all associated data</p>
+                <h3 className="font-semibold text-red-600">
+                  Delete School Account
+                </h3>
+                <p className="text-sm text-gray-600">
+                  Permanently delete your school and all associated data
+                </p>
               </div>
               <button
                 onClick={() => {
-                  if (confirm("This action cannot be undone. Type DELETE to confirm")) {
-                    const userInput = prompt("Type DELETE to confirm deletion:");
+                  if (
+                    confirm(
+                      "This action cannot be undone. Type DELETE to confirm",
+                    )
+                  ) {
+                    const userInput = prompt(
+                      "Type DELETE to confirm deletion:",
+                    );
                     if (userInput === "DELETE") {
-                      toast.error("Account deletion initiated. You will receive a confirmation email.");
+                      toast.error(
+                        "Account deletion initiated. You will receive a confirmation email.",
+                      );
                       // Handle deletion
                     }
                   }
@@ -860,7 +967,9 @@ export default function AdminSettingsPage() {
           >
             ← Back to Dashboard
           </button>
-          <p className="text-sm text-gray-500">Last updated: {new Date().toLocaleDateString()}</p>
+          <p className="text-sm text-gray-500">
+            Last updated: {new Date().toLocaleDateString()}
+          </p>
         </div>
       </div>
     </div>

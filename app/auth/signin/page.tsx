@@ -1,58 +1,57 @@
 // app/auth/signin/page.tsx
 
-'use client'
+"use client";
 
-import { useState } from 'react'
-import { signIn } from 'next-auth/react'
-import { useRouter, useSearchParams } from 'next/navigation'
-import Link from 'next/link'
-import { Loader2 } from 'lucide-react'
+import { useState } from "react";
+import { signIn } from "next-auth/react";
+import { useRouter, useSearchParams } from "next/navigation";
+import Link from "next/link";
+import { Loader2 } from "lucide-react";
 
 export default function SignInPage() {
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState('')
-  
-  const router = useRouter()
-  const searchParams = useSearchParams()
-  const callbackUrl = searchParams.get('callbackUrl') || '/dashboard'
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get("callbackUrl") || "/dashboard";
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsLoading(true)
-    setError('')
+    e.preventDefault();
+    setIsLoading(true);
+    setError("");
 
     try {
-      const result = await signIn('credentials', {
+      const result = await signIn("credentials", {
         email,
         password,
         redirect: false,
-      })
+      });
 
       if (result?.error) {
-        setError('Invalid email or password')
-        return
+        setError("Invalid email or password");
+        return;
       }
 
       if (result?.ok) {
-        router.push(callbackUrl)
-        router.refresh()
+        router.push(callbackUrl);
+        router.refresh();
       }
     } catch (error) {
-      setError('An unexpected error occurred')
-      console.error('Login error:', error)
+      setError("An unexpected error occurred");
+      console.error("Login error:", error);
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#F5F5DC] p-4">
       <div className="w-full max-w-5xl bg-white rounded-3xl shadow-2xl overflow-hidden flex">
         {/* Left Section - Green Background */}
         <div className="hidden md:flex md:w-1/2 bg-gradient-to-br from-[#1a5f3f] to-[#2d7a52] relative p-12 flex-col justify-center items-center">
-          
           {/* Logo */}
           <div className="relative z-10 text-center">
             <div className="mb-8">
@@ -61,9 +60,21 @@ export default function SignInPage() {
                 <div className="relative w-16 h-16">
                   <svg viewBox="0 0 100 100" className="w-full h-full">
                     {/* Green Circle Background */}
-                    <circle cx="50" cy="50" r="45" fill="#22c55e" opacity="0.3"/>
-                    <circle cx="50" cy="50" r="35" fill="#22c55e" opacity="0.5"/>
-                    
+                    <circle
+                      cx="50"
+                      cy="50"
+                      r="45"
+                      fill="#22c55e"
+                      opacity="0.3"
+                    />
+                    <circle
+                      cx="50"
+                      cy="50"
+                      r="35"
+                      fill="#22c55e"
+                      opacity="0.5"
+                    />
+
                     {/* Arrow */}
                     <path
                       d="M 30 60 Q 50 30, 70 40 L 65 45 L 75 50 L 65 55 L 70 60 Q 50 70, 30 60"
@@ -74,14 +85,14 @@ export default function SignInPage() {
                   </svg>
                 </div>
               </div>
-              
+
               {/* KlassMata Text */}
               <h1 className="text-5xl font-bold mb-3">
                 <span className="text-[#22c55e]">KLASS</span>
                 <span className="text-[#fbbf24]">MATA</span>
               </h1>
             </div>
-            
+
             <p className="text-[#fbbf24] text-lg font-medium">
               Powered by KlassMata
             </p>
@@ -101,7 +112,7 @@ export default function SignInPage() {
           <h2 className="text-4xl font-bold text-gray-900 mb-2">
             Welcome back
           </h2>
-          
+
           {error && (
             <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
               <p className="text-sm text-red-600">{error}</p>
@@ -155,14 +166,14 @@ export default function SignInPage() {
                   Signing in...
                 </span>
               ) : (
-                'Log in'
+                "Log in"
               )}
             </button>
           </form>
 
           {/* Sign Up Link */}
           <p className="mt-8 text-center text-sm text-gray-600">
-            Don't have an account?{' '}
+            Don&apos;t have an account?{" "}
             <Link
               href="/auth/signup"
               className="text-[#1a5f3f] hover:text-[#2d7a52] font-semibold transition-colors"
@@ -170,10 +181,8 @@ export default function SignInPage() {
               Sign up here
             </Link>
           </p>
-
-          
         </div>
       </div>
     </div>
-  )
+  );
 }

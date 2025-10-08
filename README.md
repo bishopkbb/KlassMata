@@ -17,46 +17,54 @@ KlassMata is a full-stack SaaS solution that digitizes school operations, from s
 ## ✨ Key Features
 
 ### 👨‍💼 Administration
+
 - **Multi-school Support**: Manage multiple schools from a single platform
 - **Role-based Access Control**: Granular permissions for super admins, school admins, teachers, students, and parents
 - **Subscription Management**: Built-in SaaS billing with multiple tier support
 - **Comprehensive Analytics**: Real-time dashboards and performance metrics
 
 ### 👨‍🏫 Teacher Management
+
 - **Invite System**: Secure email-based teacher onboarding with unique invite codes
 - **Class & Subject Assignment**: Flexible assignment of teachers to classes and subjects
 - **Performance Tracking**: Monitor teaching effectiveness and student outcomes
 
 ### 👨‍🎓 Student Management
+
 - **Digital Student Profiles**: Complete student information with parent linkage
 - **Enrollment Management**: Streamlined admission and registration processes
 - **Academic Records**: Historical performance tracking and report cards
 
 ### 📚 Academic Operations
+
 - **Attendance Tracking**: Quick mark with bulk actions, real-time sync, offline-first capability
 - **Assignment Management**: Create, distribute, and grade assignments with deadline tracking
 - **Exam Management**: Schedule exams, record results, generate gradebooks
 - **Subject Management**: Curriculum planning and subject organization
 
 ### 💰 Financial Management
+
 - **Integrated Payments**: Flutterwave and Paga payment gateway integration
 - **Fee Management**: Invoice generation, payment tracking, and receipt automation
 - **Subscription Billing**: Automated recurring billing for school subscriptions
 - **Financial Reports**: Revenue tracking and payment analytics
 
 ### 📊 Reports & Analytics
+
 - **Student Performance Reports**: Individual and class-level analytics
 - **Attendance Reports**: Trends, patterns, and insights
 - **Financial Summaries**: Revenue, outstanding payments, and forecasting
 - **Custom Exports**: CSV and PDF report generation
 
 ### 🔐 Security & Authentication
+
 - **JWT-based Authentication**: Secure, stateless authentication with NextAuth.js
 - **Password Encryption**: Industry-standard bcrypt hashing
 - **Session Management**: Secure session handling with automatic expiration
 - **Email Verification**: Account activation via email confirmation
 
 ### 📧 Communication
+
 - **Email Integration**: Powered by Resend for reliable email delivery
 - **Teacher Invitations**: Automated invitation emails with onboarding links
 - **Notifications**: In-app and email notifications for important events
@@ -64,6 +72,7 @@ KlassMata is a full-stack SaaS solution that digitizes school operations, from s
 ## 🛠️ Technology Stack
 
 ### Frontend
+
 - **Framework**: Next.js 15 (App Router)
 - **Language**: TypeScript 5.0
 - **Styling**: Tailwind CSS
@@ -72,6 +81,7 @@ KlassMata is a full-stack SaaS solution that digitizes school operations, from s
 - **State Management**: React Hooks
 
 ### Backend
+
 - **Runtime**: Node.js
 - **API**: Next.js API Routes (RESTful)
 - **ORM**: Prisma 5.0
@@ -80,6 +90,7 @@ KlassMata is a full-stack SaaS solution that digitizes school operations, from s
 - **Email**: Resend
 
 ### DevOps & Tools
+
 - **Version Control**: Git
 - **Package Manager**: npm
 - **Code Quality**: ESLint, Prettier
@@ -99,6 +110,8 @@ KlassMata is a full-stack SaaS solution that digitizes school operations, from s
 ### 1. Clone the Repository
 
 ```bash
+git clone https://github.com/bishopkbb/klassMata.git
+cd klassMata
 git clone https://github.com/bishopkbb/klassMata.git
 cd klassMata
 ```
@@ -134,6 +147,7 @@ PAGA_SECRET_KEY=your_paga_secret_key
 ```
 
 **Generate secure secrets:**
+
 ```bash
 # For NEXTAUTH_SECRET
 openssl rand -base64 32
@@ -191,8 +205,8 @@ docker run -p 3000:3000 --env-file .env klassmata:latest
 klassmata/
 ├── app/                          # Next.js 15 App Router
 │   ├── (auth)/                   # Authentication routes
-│   │   ├── login/
-│   │   └── register/
+│   │   ├── signin/
+│   │   └── signup/
 │   ├── admin/                    # Admin dashboard
 │   │   ├── dashboard/
 │   │   ├── teachers/
@@ -231,15 +245,19 @@ klassmata/
 ## 🔑 Default Access
 
 ### Super Admin
+
 - Email: `ajibade_tosin@yahoo.com`
 - Automatically receives super admin privileges upon registration
 
 ### Teacher Registration
+
 - Default role for new registrations
 - Can also be invited by admins via secure invite system
 
 ### Invite-Based Onboarding
+
 Teachers can be invited by school admins:
+
 1. Admin sends invite via email
 2. Teacher receives unique invite code
 3. Teacher completes onboarding at `/onboard?code=INVITE_CODE`
@@ -248,11 +266,13 @@ Teachers can be invited by school admins:
 ## 📚 API Documentation
 
 ### Authentication
+
 - `POST /api/auth/signup` - User registration
 - `POST /api/auth/signin` - User login (via NextAuth)
 - `GET /api/auth/session` - Get current session
 
 ### Teachers
+
 - `GET /api/teachers` - List all teachers (school-specific)
 - `POST /api/teachers/invite` - Send teacher invitation
 - `GET /api/teachers/invite` - List pending invites
@@ -261,12 +281,14 @@ Teachers can be invited by school admins:
 - `GET /api/teachers/onboard?code=` - Validate invite code
 
 ### Students
+
 - `GET /api/students` - List all students
 - `POST /api/students` - Create student
 - `PUT /api/students/[id]` - Update student
 - `DELETE /api/students/[id]` - Delete student
 
 ### Payments
+
 - `POST /api/payments/initiate` - Initiate payment
 - `POST /api/payments/webhook` - Payment webhook handler
 - `GET /api/payments/[id]` - Get payment details
@@ -286,18 +308,18 @@ npm test:coverage
 
 ## 📦 Available Scripts
 
-| Script | Description |
-|--------|-------------|
-| `npm run dev` | Start development server |
-| `npm run build` | Build for production |
-| `npm run start` | Start production server |
-| `npm run lint` | Run ESLint |
-| `npm run lint:fix` | Fix ESLint errors |
-| `npm run type-check` | Run TypeScript compiler check |
-| `npm run db:generate` | Generate Prisma Client |
-| `npm run db:push` | Push schema to database |
-| `npm run db:studio` | Open Prisma Studio GUI |
-| `npm run db:seed` | Seed database with sample data |
+| Script                | Description                    |
+| --------------------- | ------------------------------ |
+| `npm run dev`         | Start development server       |
+| `npm run build`       | Build for production           |
+| `npm run start`       | Start production server        |
+| `npm run lint`        | Run ESLint                     |
+| `npm run lint:fix`    | Fix ESLint errors              |
+| `npm run type-check`  | Run TypeScript compiler check  |
+| `npm run db:generate` | Generate Prisma Client         |
+| `npm run db:push`     | Push schema to database        |
+| `npm run db:studio`   | Open Prisma Studio GUI         |
+| `npm run db:seed`     | Seed database with sample data |
 
 ## 🚢 Deployment
 
@@ -340,12 +362,14 @@ npm start
 ## 🔧 Configuration
 
 ### Email Setup (Resend)
+
 1. Sign up at [resend.com](https://resend.com)
 2. Get API key
 3. Add to `.env`: `RESEND_API_KEY=re_...`
 4. (Optional) Verify custom domain for branded emails
 
 ### Payment Integration
+
 1. **Flutterwave**: Get keys from [flutterwave.com](https://flutterwave.com)
 2. **Paga**: Get keys from [paga.com](https://paga.com)
 3. Add keys to `.env`
@@ -361,6 +385,7 @@ Contributions are welcome! Please follow these steps:
 5. Open a Pull Request
 
 ### Code Style
+
 - Follow existing code patterns
 - Use TypeScript strict mode
 - Write meaningful commit messages
@@ -382,7 +407,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 - **Email**: ajibade_tosin@yahoo.com
 - **Documentation**: [docs.klassmata.com](https://docs.klassmata.com)
-- **Issues**: [GitHub Issues](https://github.com/bishopkbb/klassmata/issues)
+- **Issues**: [GitHub Issues](https://github.com/bishopkbb/klassMata/issues)
 - **Discussions**: [GitHub Discussions](https://github.com/bishopkbb/klassMata/discussions)
 
 ## 🗺️ Roadmap
@@ -406,3 +431,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ---
 
 Made with ❤️ for Nigerian schools
+
