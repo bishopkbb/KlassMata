@@ -3,7 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 import { nanoid } from "nanoid";
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { authOptions } from "@/lib/auth";
 import { sendTeacherInvite } from "@/lib/email";
 
 // POST create teacher invite
@@ -11,11 +11,11 @@ export async function POST(req: Request) {
   try {
     // 1. Check authentication
     const session = await getServerSession(authOptions);
-    
+
     if (!session || !session.user) {
       return NextResponse.json(
         { error: "Unauthorized: Please log in" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -24,7 +24,7 @@ export async function POST(req: Request) {
     if (userRole !== "admin" && userRole !== "super_admin") {
       return NextResponse.json(
         { error: "Forbidden: Only admins can invite teachers" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -33,7 +33,7 @@ export async function POST(req: Request) {
     if (!adminSchoolId) {
       return NextResponse.json(
         { error: "No school associated with your account" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -45,7 +45,7 @@ export async function POST(req: Request) {
     if (!name || !email) {
       return NextResponse.json(
         { error: "Name and email are required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -62,13 +62,13 @@ export async function POST(req: Request) {
     if (existingUser) {
       return NextResponse.json(
         { error: "A user with this email already exists" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     // 8. Check for existing pending invite
     const existingInvite = await prisma.teacherInvite.findFirst({
-      where: { 
+      where: {
         email: email.toLowerCase(),
         status: "pending",
         schoolId: adminSchoolId,
@@ -78,7 +78,7 @@ export async function POST(req: Request) {
     if (existingInvite) {
       return NextResponse.json(
         { error: "A pending invite already exists for this email" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -87,7 +87,7 @@ export async function POST(req: Request) {
 
     // 10. Create teacher invite
     const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 days
-    
+
     const invite = await prisma.teacherInvite.create({
       data: {
         code: inviteCode,
@@ -115,7 +115,10 @@ export async function POST(req: Request) {
     });
 
     if (!emailResult.success) {
-      console.error('Failed to send email, but invite was created:', emailResult.error);
+      console.error(
+        "Failed to send email, but invite was created:",
+        emailResult.error,
+      );
       // Don't fail the request, just log the error
     }
 
@@ -130,16 +133,15 @@ export async function POST(req: Request) {
         subject: subject || "Not assigned",
       },
       expiresAt: invite.expiresAt,
-      message: emailResult.success 
-        ? "Teacher invite sent via email successfully!" 
+      message: emailResult.success
+        ? "Teacher invite sent via email successfully!"
         : "Teacher invite created, but email failed to send. Share the invite code manually.",
     });
-
   } catch (error) {
     console.error("Error creating teacher invite:", error);
     return NextResponse.json(
       { error: "Failed to create teacher invite. Please try again." },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -149,11 +151,11 @@ export async function GET(req: Request) {
   try {
     // 1. Check authentication
     const session = await getServerSession(authOptions);
-    
+
     if (!session || !session.user) {
       return NextResponse.json(
         { error: "Unauthorized: Please log in" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -162,7 +164,7 @@ export async function GET(req: Request) {
     if (userRole !== "admin" && userRole !== "super_admin") {
       return NextResponse.json(
         { error: "Forbidden: Only admins can view invites" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -170,7 +172,7 @@ export async function GET(req: Request) {
     if (!schoolId) {
       return NextResponse.json(
         { error: "No school associated with your account" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -186,12 +188,11 @@ export async function GET(req: Request) {
     });
 
     return NextResponse.json({ invites });
-
   } catch (error) {
     console.error("Error fetching invites:", error);
     return NextResponse.json(
       { error: "Failed to fetch invites" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

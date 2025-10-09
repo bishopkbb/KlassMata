@@ -2,8 +2,8 @@ import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { prisma } from "@/lib/prisma";
 import CredentialsProvider from "next-auth/providers/credentials";
 import type { NextAuthOptions } from "next-auth";
-import { compare } from "bcryptjs"; // ✅ Fix 2
-import { UserRole } from "@prisma/client"; // ✅ Fix 1
+import { compare } from "bcryptjs";
+import { UserRole } from "@prisma/client";
 
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
@@ -22,37 +22,49 @@ export const authOptions: NextAuthOptions = {
         const user = await prisma.user.findUnique({
           where: { email: credentials.email },
         });
-        if (!user) return null;
+
+        if (!user || !user.password) return null;
 
         const valid = await compare(credentials.password, user.password);
         if (!valid) return null;
 
-        return user;
+        return {
+          id: user.id,
+          email: user.email,
+          name: `${user.firstName} ${user.lastName}`,
+          role: user.role,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          schoolId: user.schoolId,
+        };
       },
     }),
   ],
 
   callbacks: {
-    async session({ session, token }) {
-      if (session.user) {
-        session.user.id = token.sub!;
-        session.user.role = token.role as UserRole; // ✅ fixed typing
-        session.user.firstName = token.firstName as string | null;
-        session.user.lastName = token.lastName as string | null;
-      }
-      return session;
-    },
     async jwt({ token, user }) {
       if (user) {
+        token.id = user.id;
         token.role = (user as any).role as UserRole;
         token.firstName = (user as any).firstName;
         token.lastName = (user as any).lastName;
+        token.schoolId = (user as any).schoolId;
       }
       return token;
+    },
+    async session({ session, token }) {
+      if (session.user) {
+        session.user.id = token.id as string;
+        session.user.role = token.role as UserRole;
+        session.user.firstName = token.firstName as string | null;
+        session.user.lastName = token.lastName as string | null;
+        session.user.schoolId = token.schoolId as string | null;
+      }
+      return session;
     },
   },
 
   pages: {
-    signIn: "/auth/signin",
+    signIn: "/auth/login",
   },
 };

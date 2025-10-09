@@ -2,26 +2,26 @@
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { authOptions } from "@/lib/auth";
 
 // GET - Fetch students with their attendance status
 export async function GET(req: Request) {
   try {
     const session = await getServerSession(authOptions);
-    
+
     if (!session?.user || session.user.role !== "teacher") {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const { searchParams } = new URL(req.url);
-    const classId = searchParams.get('classId');
-    const subjectId = searchParams.get('subjectId');
-    const date = searchParams.get('date');
+    const classId = searchParams.get("classId");
+    const subjectId = searchParams.get("subjectId");
+    const date = searchParams.get("date");
 
     if (!classId || !subjectId || !date) {
       return NextResponse.json(
         { error: "classId, subjectId, and date are required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -39,7 +39,7 @@ export async function GET(req: Request) {
     if (!subject) {
       return NextResponse.json(
         { error: "Subject not found or access denied" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -49,7 +49,7 @@ export async function GET(req: Request) {
         classId,
         isActive: true,
       },
-      orderBy: { studentId: 'asc' },
+      orderBy: { studentId: "asc" },
     });
 
     // Get existing attendance records for this date
@@ -70,10 +70,10 @@ export async function GET(req: Request) {
 
     // Map attendance to students
     const attendanceMap = new Map(
-      attendanceRecords.map(record => [record.studentId, record.status])
+      attendanceRecords.map((record) => [record.studentId, record.status]),
     );
 
-    const studentsWithAttendance = students.map(student => ({
+    const studentsWithAttendance = students.map((student) => ({
       id: student.id,
       name: `${student.firstName} ${student.lastName}`,
       studentId: student.studentId,
@@ -81,12 +81,11 @@ export async function GET(req: Request) {
     }));
 
     return NextResponse.json({ students: studentsWithAttendance });
-
   } catch (error) {
     console.error("Error fetching attendance:", error);
     return NextResponse.json(
       { error: "Failed to fetch attendance" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -95,7 +94,7 @@ export async function GET(req: Request) {
 export async function POST(req: Request) {
   try {
     const session = await getServerSession(authOptions);
-    
+
     if (!session?.user || session.user.role !== "teacher") {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
@@ -105,7 +104,7 @@ export async function POST(req: Request) {
     if (!classId || !subjectId || !date || !records) {
       return NextResponse.json(
         { error: "Missing required fields" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -123,7 +122,7 @@ export async function POST(req: Request) {
     if (!subject) {
       return NextResponse.json(
         { error: "Subject not found or access denied" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -159,12 +158,11 @@ export async function POST(req: Request) {
       success: true,
       message: "Attendance saved successfully",
     });
-
   } catch (error) {
     console.error("Error saving attendance:", error);
     return NextResponse.json(
       { error: "Failed to save attendance" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

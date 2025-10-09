@@ -2,12 +2,12 @@
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { authOptions } from "@/lib/auth";
 
 export async function GET(req: Request) {
   try {
     const session = await getServerSession(authOptions);
-    
+
     if (!session || !session.user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
@@ -34,26 +34,25 @@ export async function GET(req: Request) {
           },
         },
       },
-      orderBy: { name: 'asc' },
+      orderBy: { name: "asc" },
     });
 
-    const formattedClasses = classes.map(cls => ({
+    const formattedClasses = classes.map((cls) => ({
       id: cls.id,
       name: cls.name,
       grade: cls.grade,
-      section: cls.section || '',
+      section: cls.section || "",
       capacity: cls.capacity,
       studentCount: cls.students.length,
       subjects: cls.subjects,
     }));
 
     return NextResponse.json({ classes: formattedClasses });
-
   } catch (error) {
     console.error("Error fetching classes:", error);
     return NextResponse.json(
       { error: "Failed to fetch classes" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

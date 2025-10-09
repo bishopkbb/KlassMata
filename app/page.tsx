@@ -1,17 +1,17 @@
 // app/page.tsx
 
-import { redirect } from 'next/navigation'
-import { getServerSession } from 'next-auth'
-import { authOptions } from './api/auth/[...nextauth]/route'
-import Link from 'next/link'
-import { ArrowRight, Users, Calendar, BarChart3, BookOpen } from 'lucide-react'
+import { redirect } from "next/navigation";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
+import Link from "next/link";
+import { ArrowRight, Users, Calendar, BarChart3, BookOpen } from "lucide-react";
 
 export default async function HomePage() {
-  const session = await getServerSession(authOptions)
-  
+  const session = await getServerSession(authOptions);
+
   // If user is already authenticated, redirect to dashboard
   if (session) {
-    redirect('/dashboard')
+    redirect("/dashboard");
   }
 
   return (
@@ -24,8 +24,8 @@ export default async function HomePage() {
               {/* KlassMata Logo */}
               <div className="relative w-10 h-10">
                 <svg viewBox="0 0 100 100" className="w-full h-full">
-                  <circle cx="50" cy="50" r="45" fill="#22c55e" opacity="0.3"/>
-                  <circle cx="50" cy="50" r="35" fill="#22c55e" opacity="0.5"/>
+                  <circle cx="50" cy="50" r="45" fill="#22c55e" opacity="0.3" />
+                  <circle cx="50" cy="50" r="35" fill="#22c55e" opacity="0.5" />
                   <path
                     d="M 30 60 Q 50 30, 70 40 L 65 45 L 75 50 L 65 55 L 70 60 Q 50 70, 30 60"
                     fill="#fbbf24"
@@ -66,8 +66,8 @@ export default async function HomePage() {
           <div className="flex justify-center mb-8">
             <div className="relative w-24 h-24">
               <svg viewBox="0 0 100 100" className="w-full h-full">
-                <circle cx="50" cy="50" r="45" fill="#22c55e" opacity="0.3"/>
-                <circle cx="50" cy="50" r="35" fill="#22c55e" opacity="0.5"/>
+                <circle cx="50" cy="50" r="45" fill="#22c55e" opacity="0.3" />
+                <circle cx="50" cy="50" r="35" fill="#22c55e" opacity="0.5" />
                 <path
                   d="M 30 60 Q 50 30, 70 40 L 65 45 L 75 50 L 65 55 L 70 60 Q 50 70, 30 60"
                   fill="#fbbf24"
@@ -83,8 +83,9 @@ export default async function HomePage() {
             <span className="block text-[#22c55e]">Management System</span>
           </h1>
           <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto leading-relaxed">
-            Streamline your school operations with KlassMata. Manage students, teachers, 
-            attendance, exams, and payments all in one powerful platform.
+            Streamline your school operations with KlassMata. Manage students,
+            teachers, attendance, exams, and payments all in one powerful
+            platform.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
             <Link
@@ -104,14 +105,20 @@ export default async function HomePage() {
         </div>
 
         {/* Features Grid */}
-        <div id="features" className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 mb-20">
+        <div
+          id="features"
+          className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 mb-20"
+        >
           <div className="bg-white p-6 rounded-xl shadow-sm border hover:shadow-md transition-shadow">
             <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
               <Users className="w-6 h-6 text-blue-600" />
             </div>
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">Student Management</h3>
+            <h3 className="text-xl font-semibold text-gray-900 mb-2">
+              Student Management
+            </h3>
             <p className="text-gray-600">
-              Comprehensive student profiles, enrollment tracking, and academic records management.
+              Comprehensive student profiles, enrollment tracking, and academic
+              records management.
             </p>
           </div>
 
@@ -119,9 +126,12 @@ export default async function HomePage() {
             <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-4">
               <Calendar className="w-6 h-6 text-green-600" />
             </div>
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">Attendance Tracking</h3>
+            <h3 className="text-xl font-semibold text-gray-900 mb-2">
+              Attendance Tracking
+            </h3>
             <p className="text-gray-600">
-              Real-time attendance monitoring with automated reports and notifications.
+              Real-time attendance monitoring with automated reports and
+              notifications.
             </p>
           </div>
 
@@ -129,9 +139,12 @@ export default async function HomePage() {
             <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-4">
               <BookOpen className="w-6 h-6 text-purple-600" />
             </div>
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">Exam Management</h3>
+            <h3 className="text-xl font-semibold text-gray-900 mb-2">
+              Exam Management
+            </h3>
             <p className="text-gray-600">
-              Create, schedule, and grade exams with detailed analytics and insights.
+              Create, schedule, and grade exams with detailed analytics and
+              insights.
             </p>
           </div>
 
@@ -139,19 +152,24 @@ export default async function HomePage() {
             <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center mb-4">
               <BarChart3 className="w-6 h-6 text-orange-600" />
             </div>
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">Analytics & Reports</h3>
+            <h3 className="text-xl font-semibold text-gray-900 mb-2">
+              Analytics & Reports
+            </h3>
             <p className="text-gray-600">
-              Powerful insights and detailed reports to track school performance.
+              Powerful insights and detailed reports to track school
+              performance.
             </p>
           </div>
         </div>
 
         {/* CTA Section */}
         <div className="bg-gradient-to-r from-[#22c55e] to-[#16a34a] rounded-2xl p-12 text-center text-white">
-          <h2 className="text-3xl font-bold mb-4">Ready to Transform Your School?</h2>
+          <h2 className="text-3xl font-bold mb-4">
+            Ready to Transform Your School?
+          </h2>
           <p className="text-xl text-green-100 mb-8 max-w-2xl mx-auto">
-            Join thousands of schools already using KlassMata to streamline their operations 
-            and improve educational outcomes.
+            Join thousands of schools already using KlassMata to streamline
+            their operations and improve educational outcomes.
           </p>
           <Link
             href="/auth/signup"
@@ -171,8 +189,8 @@ export default async function HomePage() {
               {/* KlassMata Logo */}
               <div className="relative w-8 h-8">
                 <svg viewBox="0 0 100 100" className="w-full h-full">
-                  <circle cx="50" cy="50" r="45" fill="#22c55e" opacity="0.3"/>
-                  <circle cx="50" cy="50" r="35" fill="#22c55e" opacity="0.5"/>
+                  <circle cx="50" cy="50" r="45" fill="#22c55e" opacity="0.3" />
+                  <circle cx="50" cy="50" r="35" fill="#22c55e" opacity="0.5" />
                   <path
                     d="M 30 60 Q 50 30, 70 40 L 65 45 L 75 50 L 65 55 L 70 60 Q 50 70, 30 60"
                     fill="#fbbf24"
@@ -193,5 +211,5 @@ export default async function HomePage() {
         </div>
       </footer>
     </div>
-  )
+  );
 }

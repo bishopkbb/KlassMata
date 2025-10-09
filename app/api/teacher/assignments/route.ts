@@ -2,13 +2,13 @@
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { authOptions } from "@/lib/auth";
 
 // GET - Fetch all assignments for the teacher
 export async function GET(req: Request) {
   try {
     const session = await getServerSession(authOptions);
-    
+
     if (!session?.user || session.user.role !== "teacher") {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
@@ -34,10 +34,10 @@ export async function GET(req: Request) {
           select: { id: true },
         },
       },
-      orderBy: { createdAt: 'desc' },
+      orderBy: { createdAt: "desc" },
     });
 
-    const formattedAssignments = assignments.map(assignment => ({
+    const formattedAssignments = assignments.map((assignment) => ({
       id: assignment.id,
       title: assignment.title,
       description: assignment.description,
@@ -52,12 +52,11 @@ export async function GET(req: Request) {
     }));
 
     return NextResponse.json({ assignments: formattedAssignments });
-
   } catch (error) {
     console.error("Error fetching assignments:", error);
     return NextResponse.json(
       { error: "Failed to fetch assignments" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -66,19 +65,20 @@ export async function GET(req: Request) {
 export async function POST(req: Request) {
   try {
     const session = await getServerSession(authOptions);
-    
+
     if (!session?.user || session.user.role !== "teacher") {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const teacherId = session.user.id;
-    const { title, description, classId, subjectId, dueDate, maxPoints } = await req.json();
+    const { title, description, classId, subjectId, dueDate, maxPoints } =
+      await req.json();
 
     // Validate required fields
     if (!title || !description || !classId || !subjectId || !dueDate) {
       return NextResponse.json(
         { error: "All fields are required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -94,7 +94,7 @@ export async function POST(req: Request) {
     if (!subject) {
       return NextResponse.json(
         { error: "Subject not found or access denied" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -124,12 +124,11 @@ export async function POST(req: Request) {
         title: assignment.title,
       },
     });
-
   } catch (error) {
     console.error("Error creating assignment:", error);
     return NextResponse.json(
       { error: "Failed to create assignment" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

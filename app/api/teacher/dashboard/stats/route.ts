@@ -2,12 +2,12 @@
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { authOptions } from "@/lib/auth";
 
 export async function GET(req: Request) {
   try {
     const session = await getServerSession(authOptions);
-    
+
     if (!session || !session.user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
@@ -39,7 +39,7 @@ export async function GET(req: Request) {
 
     // Count total unique students across all classes
     const uniqueStudentIds = new Set(
-      classes.flatMap(c => c.students.map(s => s.id))
+      classes.flatMap((c) => c.students.map((s) => s.id)),
     );
 
     // Get pending assignments
@@ -60,7 +60,7 @@ export async function GET(req: Request) {
     });
 
     // Mock upcoming classes (you'll need to add a timetable system for real data)
-    const upcomingClasses = classes.slice(0, 3).map(cls => ({
+    const upcomingClasses = classes.slice(0, 3).map((cls) => ({
       id: cls.id,
       name: cls.name,
       time: "9:00 AM", // You'll need a timetable system for actual times
@@ -80,12 +80,11 @@ export async function GET(req: Request) {
       stats,
       upcomingClasses,
     });
-
   } catch (error) {
     console.error("Error fetching teacher stats:", error);
     return NextResponse.json(
       { error: "Failed to fetch dashboard data" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

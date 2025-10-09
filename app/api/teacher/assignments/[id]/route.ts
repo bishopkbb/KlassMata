@@ -1,15 +1,15 @@
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { authOptions } from "@/lib/auth";
 
 export async function GET(
   req: Request,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const session = await getServerSession(authOptions);
-    
+
     if (!session?.user || session.user.role !== "teacher") {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
@@ -43,13 +43,16 @@ export async function GET(
               },
             },
           },
-          orderBy: { submittedAt: 'desc' },
+          orderBy: { submittedAt: "desc" },
         },
       },
     });
 
     if (!assignment) {
-      return NextResponse.json({ error: "Assignment not found" }, { status: 404 });
+      return NextResponse.json(
+        { error: "Assignment not found" },
+        { status: 404 },
+      );
     }
 
     if (assignment.createdBy !== teacherId) {
@@ -67,7 +70,7 @@ export async function GET(
       isActive: assignment.isActive,
       createdAt: assignment.createdAt.toISOString(),
       totalStudents: assignment.class.students.length,
-      submissions: assignment.submissions.map(sub => ({
+      submissions: assignment.submissions.map((sub) => ({
         id: sub.id,
         studentId: sub.student.id,
         studentName: `${sub.student.firstName} ${sub.student.lastName}`,
@@ -76,30 +79,29 @@ export async function GET(
         attachments: sub.attachments,
         submittedAt: sub.submittedAt.toISOString(),
         points: sub.points,
-        feedback: sub.feedback || '',
+        feedback: sub.feedback || "",
         gradedAt: sub.gradedAt?.toISOString() || null,
         isLate: new Date(sub.submittedAt) > assignment.dueDate,
       })),
     };
 
     return NextResponse.json({ assignment: formattedAssignment });
-
   } catch (error) {
     console.error("Error fetching assignment:", error);
     return NextResponse.json(
       { error: "Failed to fetch assignment" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
 
 export async function DELETE(
   req: Request,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const session = await getServerSession(authOptions);
-    
+
     if (!session?.user || session.user.role !== "teacher") {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
@@ -117,7 +119,7 @@ export async function DELETE(
     if (!assignment) {
       return NextResponse.json(
         { error: "Assignment not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -129,12 +131,11 @@ export async function DELETE(
       success: true,
       message: "Assignment deleted successfully",
     });
-
   } catch (error) {
     console.error("Error deleting assignment:", error);
     return NextResponse.json(
       { error: "Failed to delete assignment" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

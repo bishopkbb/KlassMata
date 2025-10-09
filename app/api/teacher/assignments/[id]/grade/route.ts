@@ -1,15 +1,15 @@
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { authOptions } from "@/lib/auth";
 
 export async function POST(
   req: Request,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const session = await getServerSession(authOptions);
-    
+
     if (!session?.user || session.user.role !== "teacher") {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
@@ -28,14 +28,14 @@ export async function POST(
     if (!assignment) {
       return NextResponse.json(
         { error: "Assignment not found or access denied" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
     if (points < 0 || points > assignment.maxPoints) {
       return NextResponse.json(
         { error: `Points must be between 0 and ${assignment.maxPoints}` },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -53,12 +53,11 @@ export async function POST(
       message: "Grade saved successfully",
       submission: updatedSubmission,
     });
-
   } catch (error) {
     console.error("Error saving grade:", error);
     return NextResponse.json(
       { error: "Failed to save grade" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
