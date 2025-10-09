@@ -7,7 +7,10 @@ import { UserRole } from "@prisma/client";
 
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
-  session: { strategy: "jwt" },
+  session: {
+    strategy: "jwt",
+    maxAge: 30 * 24 * 60 * 60, // 30 days
+  },
 
   providers: [
     CredentialsProvider({
@@ -62,9 +65,41 @@ export const authOptions: NextAuthOptions = {
       }
       return session;
     },
+    async redirect({ url, baseUrl }) {
+      // Prevents redirect loops by handling callback URLs properly
+      // If the URL is relative, make it absolute
+      if (url.startsWith("/")) return `${baseUrl}${url}`;
+      // If the URL is on the same origin, allow it
+      else if (new URL(url).origin === baseUrl) return url;
+
+      // Otherwise, redirect to base URL
+      return baseUrl;
+    },
   },
 
   pages: {
-    signIn: "/auth/login",
+    signIn: "/auth/login", // Changed from /auth/signin to match your actual login page
+    error: "/auth/error", // Optional: add custom error page
   },
+
+  // Production security settings
+  secret: process.env.NEXTAUTH_SECRET,
+
+  cookies: {
+    sessionToken: {
+      name:
+        process.env.NODE_ENV === "production"
+          ? "__Secure-next-auth.session-token"
+          : "next-auth.session-token",
+      options: {
+        httpOnly: true,
+        sameSite: "lax",
+        path: "/",
+        secure: process.env.NODE_ENV === "production", // true in production
+      },
+    },
+  },
+
+  // Enable debug in development only
+  debug: process.env.NODE_ENV === "development",
 };
