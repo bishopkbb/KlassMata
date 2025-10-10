@@ -96,7 +96,7 @@ export default withAuth(
       authorized: ({ token }) => !!token,
     },
     pages: {
-      signIn: "/auth/login", // Custom sign-in page
+      signIn: "/auth/signin", // Custom sign-in page
     },
   },
 );

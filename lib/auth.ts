@@ -78,8 +78,8 @@ export const authOptions: NextAuthOptions = {
   },
 
   pages: {
-    signIn: "/auth/login", // Changed from /auth/signin to match your actual login page
-    error: "/auth/error", // Optional: add custom error page
+    signIn: "/auth/signin",
+    error: "/auth/error",
   },
 
   // Production security settings
